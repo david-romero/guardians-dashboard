@@ -4,8 +4,27 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>com.app.domain.model.DomainEntity</class>
 		<class>com.app.domain.model.types.Administrador</class>
+		<class>com.app.domain.model.types.Alumno</class>
+		<class>com.app.domain.model.types.Asignatura</class>
+		<class>com.app.domain.model.types.Cita</class>
+		<class>com.app.domain.model.types.Curso</class>
+		<class>com.app.domain.model.types.CursoAcademico</class>
+		<class>com.app.domain.model.types.Evaluacion</class>
+		<class>com.app.domain.model.types.Evento</class>
+		<class>com.app.domain.model.types.ItemEvaluable</class>
+		<class>com.app.domain.model.types.NotaPorEvaluacion</class>
+		<class>com.app.domain.model.types.Notificacion</class>
+		<class>com.app.domain.model.types.PadreMadreOTutor</class>
 		<class>com.app.domain.model.types.Persona</class>
-		<class>com.app.domain.model.types.Usuario</class>
+		<class>com.app.domain.model.types.Profesor</class>
+		<class>com.app.domain.model.types.itemsevaluables.Actitud</class>
+		<class>com.app.domain.model.types.itemsevaluables.Actividad</class>
+		<class>com.app.domain.model.types.itemsevaluables.Cuaderno</class>
+		<class>com.app.domain.model.types.itemsevaluables.EjerciciosEntregados</class>
+		<class>com.app.domain.model.types.itemsevaluables.Examen</class>
+		<class>com.app.domain.model.types.itemsevaluables.FaltaDeAsistencia</class>
+		<class>com.app.domain.model.types.itemsevaluables.Retraso</class>
+		<class>com.app.domain.model.types.itemsevaluables.Trabajo</class>
 		<class>com.app.infrastructure.security.Authority</class>
 		<class>com.app.infrastructure.security.RememberMeToken</class>
 		<class>com.app.infrastructure.security.UserAccount</class>

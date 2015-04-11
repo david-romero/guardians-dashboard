@@ -25,7 +25,7 @@ public enum UserMenuHelper {
 
 	
 	
-	PANELCONTROL("PaneldeControl", PanelControlView.class, FontAwesome.HOME, true,Arrays.asList(new Authority(Authority.ADMINISTRADOR),new Authority(Authority.USUARIO))),
+	PANELCONTROL("PaneldeControl", PanelControlView.class, FontAwesome.HOME, true,Arrays.asList(new Authority(Authority.ADMINISTRADOR),new Authority(Authority.TUTOR),new Authority(Authority.PROFESOR))),
 	BANEAR("BanearUsuario", BanearUsuarioView.class, FontAwesome.BAN, true,Arrays.asList(new Authority(Authority.ADMINISTRADOR)));
 	
 

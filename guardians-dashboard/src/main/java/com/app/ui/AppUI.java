@@ -223,7 +223,9 @@ public class AppUI extends UI implements ErrorHandler {
 
 		navigator.addView(Authority.ADMINISTRADOR, AdminView.class);
 
-		navigator.addView(Authority.USUARIO, UsuarioView.class);
+		navigator.addView(Authority.PROFESOR, ProfesorView.class);
+		
+		navigator.addView(Authority.TUTOR, TutorView.class);
 
 		setNavigator(navigator);
 		Authentication authRememberMe = null;

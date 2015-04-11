@@ -51,7 +51,13 @@ public class Authority implements GrantedAuthority {
 	/**
 	 * 
 	 */
-	public static final String USUARIO = "USUARIO";
+	public static final String PROFESOR = "PROFESOR";
+	
+	/**
+	 * 
+	 */
+	public static final String TUTOR = "TUTOR";
+
 
 	/**
 	 * 
@@ -66,7 +72,7 @@ public class Authority implements GrantedAuthority {
 	private String authority;
 
 	@NotBlank
-	@Pattern(regexp = "^"  + USUARIO + "|" + ADMINISTRADOR + "$")
+	@Pattern(regexp = "^"  + TUTOR + "|" + ADMINISTRADOR + "|" + PROFESOR + "$")
 	/**
 	 * 
 	 */
@@ -95,11 +101,15 @@ public class Authority implements GrantedAuthority {
 		result = new ArrayList<Authority>();
 
 		authority = new Authority();
-		authority.setAuthority(USUARIO);
+		authority.setAuthority(TUTOR);
 		result.add(authority);
 
 		authority = new Authority();
 		authority.setAuthority(ADMINISTRADOR);
+		result.add(authority);
+		
+		authority = new Authority();
+		authority.setAuthority(PROFESOR);
 		result.add(authority);
 
 		return result;
