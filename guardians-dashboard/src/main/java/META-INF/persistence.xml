@@ -7,6 +7,7 @@
 		<class>com.app.domain.model.types.Persona</class>
 		<class>com.app.domain.model.types.Usuario</class>
 		<class>com.app.infrastructure.security.Authority</class>
+		<class>com.app.infrastructure.security.RememberMeToken</class>
 		<class>com.app.infrastructure.security.UserAccount</class>
 		
 		<properties>
