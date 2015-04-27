@@ -1,0 +1,24 @@
+/**
+* RelacionLaboral.java
+* guardians-dashboard
+* 17/4/2015 20:00:32
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+
+import com.app.domain.model.DomainEntity;
+
+@Entity
+@Access(AccessType.PROPERTY)
+/**
+ * @author David
+ *
+ */
+public class RelacionLaboral extends DomainEntity {
+
+}

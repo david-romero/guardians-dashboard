@@ -13,12 +13,19 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.app.domain.model.types.Profesor;
 import com.app.presenter.event.EventComunication.CloseOpenWindowsEvent;
 import com.app.presenter.event.EventComunication.NotificationsCountUpdatedEvent;
 import com.app.presenter.event.EventComunicationBus;
+import com.app.ui.components.NotificacionCreateWindow;
+import com.app.ui.components.SparklineChart;
+import com.app.ui.components.TopGrossingMoviesChart;
 import com.app.ui.components.TopTenMoviesTable;
+import com.app.ui.user.notificaciones.presenter.NotificacionesPresenter;
+import com.app.ui.user.notificaciones.view.NotificacionesView;
 import com.app.ui.user.panelControl.presenter.PanelControlPresenter;
 import com.google.gwt.thirdparty.guava.common.eventbus.Subscribe;
+import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -42,7 +49,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-@SpringView(name="PaneldeControl")
+@SpringView(name = "PaneldeControl")
 /**
  * @author David
  *
@@ -59,19 +66,25 @@ public class PanelControlView extends Panel implements View {
 	@Autowired
 	private PanelControlPresenter presenter;
 
+	@Autowired
+	private NotificacionesPresenter presenterNotificaciones;
+
+	@Autowired
+	private NotificacionCreateWindow window;
+
 	private Label titleLabel;
 	private NotificationsButton notificationsButton;
 	private NotificationCreateButton notificationCreateButton;
 	private CssLayout dashboardPanels;
 	private VerticalLayout root;
 	private Window notificationsWindow;
-	
+
 	@Override
 	public void enter(final ViewChangeEvent event) {
 	}
-	
+
 	@PostConstruct
-    void init() {
+	void init() {
 		addStyleName(ValoTheme.PANEL_BORDERLESS);
 		setSizeFull();
 		EventComunicationBus.register(this);
@@ -93,7 +106,7 @@ public class PanelControlView extends Panel implements View {
 
 		// All the open sub-windows should be closed whenever the root layout
 		// gets clicked.
-		root.addLayoutClickListener(e->{
+		root.addLayoutClickListener(e -> {
 			EventComunicationBus.post(new CloseOpenWindowsEvent());
 		});
 		notificationsButton.updateNotificationsCount(null);
@@ -101,11 +114,27 @@ public class PanelControlView extends Panel implements View {
 
 	private Component buildSparklines() {
 		CssLayout sparks = new CssLayout();
-        sparks.addStyleName("sparks");
-        sparks.setWidth("100%");
-        Responsive.makeResponsive(sparks);
+		sparks.addStyleName("sparks");
+		sparks.setWidth("100%");
+		Responsive.makeResponsive(sparks);
 
-        return sparks;
+		SparklineChart s = new SparklineChart("Traffic", "K", "",
+				new SolidColor("#3090F0"), 22, 20, 80);
+		sparks.addComponent(s);
+
+		s = new SparklineChart("Revenue / Day", "M", "$", new SolidColor(
+				"#98DF58"), 8, 89, 150);
+		sparks.addComponent(s);
+
+		s = new SparklineChart("Checkout Time", "s", "", new SolidColor(
+				"#F9DD51"), 10, 30, 120);
+		sparks.addComponent(s);
+
+		s = new SparklineChart("Theater Fill Rate", "%", "", new SolidColor(
+				"#EC6464"), 50, 34, 100);
+		sparks.addComponent(s);
+
+		return sparks;
 	}
 
 	private Component buildHeader() {
@@ -122,7 +151,8 @@ public class PanelControlView extends Panel implements View {
 
 		notificationsButton = buildNotificationsButton();
 		notificationCreateButton = buildNotificationCreateButton();
-		HorizontalLayout tools = new HorizontalLayout(notificationsButton,notificationCreateButton);
+		HorizontalLayout tools = new HorizontalLayout(notificationsButton,
+				notificationCreateButton);
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 		header.addComponent(tools);
@@ -132,20 +162,20 @@ public class PanelControlView extends Panel implements View {
 
 	private NotificationsButton buildNotificationsButton() {
 		NotificationsButton result = new NotificationsButton();
-		result.addClickListener(e->{
+		result.addClickListener(e -> {
 			openNotificationsPopup(e);
 		});
 		return result;
 	}
-	
+
 	private NotificationCreateButton buildNotificationCreateButton() {
 		NotificationCreateButton result = new NotificationCreateButton();
-		result.addClickListener(e->{
-			//TODO
+		result.addClickListener(e -> {
+			window.setPresenter(presenterNotificaciones);
+			getUI().addWindow(window);
 		});
 		return result;
 	}
-
 
 	private Component buildContent() {
 		dashboardPanels = new CssLayout();
@@ -161,9 +191,13 @@ public class PanelControlView extends Panel implements View {
 	}
 
 	private Component buildTopGrossingMovies() {
-		Label topGrossingMoviesChart = new Label();
-		topGrossingMoviesChart.setSizeFull();
-		return createContentWrapper(topGrossingMoviesChart);
+		if (presenter.getCurrentPerson() instanceof Profesor) {
+			TopGrossingMoviesChart topGrossingMoviesChart = new TopGrossingMoviesChart();
+			topGrossingMoviesChart.setSizeFull();
+			return createContentWrapper(topGrossingMoviesChart);
+		} else {
+			return createContentWrapper(new Label("Administrador"));
+		}
 	}
 
 	private Component buildNotes() {
@@ -184,7 +218,7 @@ public class PanelControlView extends Panel implements View {
 	}
 
 	private Component buildPopularMovies() {
-		return createContentWrapper(new Label());
+		return createContentWrapper(new TopTenMoviesTable());
 	}
 
 	private Component createContentWrapper(final Component content) {
@@ -208,9 +242,9 @@ public class PanelControlView extends Panel implements View {
 
 		MenuBar tools = new MenuBar();
 		tools.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
-		if ( content instanceof TextArea ){
-			MenuItem save = tools.addItem("", FontAwesome.SAVE,new Command() {
-				
+		if (content instanceof TextArea) {
+			MenuItem save = tools.addItem("", FontAwesome.SAVE, new Command() {
+
 				/**
 				 * 
 				 */
@@ -219,12 +253,12 @@ public class PanelControlView extends Panel implements View {
 				@Override
 				public void menuSelected(MenuItem selectedItem) {
 					@SuppressWarnings("unused")
-					String notes = ((TextArea)content).getValue();
+					String notes = ((TextArea) content).getValue();
 				}
 			});
 			save.setStyleName("icon-only");
 		}
-		
+
 		MenuItem max = tools.addItem("", FontAwesome.EXPAND, new Command() {
 
 			/**
@@ -278,8 +312,6 @@ public class PanelControlView extends Panel implements View {
 		slot.addComponent(card);
 		return slot;
 	}
-	
-	
 
 	private void openNotificationsPopup(final ClickEvent event) {
 		VerticalLayout notificationsLayout = new VerticalLayout();
@@ -290,18 +322,16 @@ public class PanelControlView extends Panel implements View {
 		title.addStyleName(ValoTheme.LABEL_H3);
 		title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
 		notificationsLayout.addComponent(title);
-		
 
 		EventComunicationBus.post(new NotificationsCountUpdatedEvent());
-
-		
 
 		HorizontalLayout footer = new HorizontalLayout();
 		footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
 		footer.setWidth("100%");
 		Button showAll = new Button("Ver Notificaciones");
-		showAll.addClickListener(e->{
-			notificationsWindow.close();	
+		showAll.addClickListener(e -> {
+			notificationsWindow.close();
+			getUI().getNavigator().navigateTo(NotificacionesView.NAME);
 		});
 		showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 		showAll.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -330,8 +360,6 @@ public class PanelControlView extends Panel implements View {
 		}
 	}
 
-	
-
 	/*
 	 * @Override public void dashboardNameEdited(final String name) {
 	 * titleLabel.setValue(name); }
@@ -342,7 +370,7 @@ public class PanelControlView extends Panel implements View {
 			it.next().setVisible(!maximized);
 		}
 		dashboardPanels.setVisible(true);
-		dashboardPanels.forEach(componente ->{
+		dashboardPanels.forEach(componente -> {
 			componente.setVisible(!maximized);
 		});
 
@@ -389,7 +417,7 @@ public class PanelControlView extends Panel implements View {
 			setDescription(description);
 		}
 	}
-	
+
 	public static final class NotificationCreateButton extends Button {
 		/**
 		 * 

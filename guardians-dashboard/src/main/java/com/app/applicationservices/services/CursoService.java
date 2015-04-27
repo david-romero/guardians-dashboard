@@ -10,7 +10,6 @@ package com.app.applicationservices.services;
 /**
  * imports
  */
-import java.text.ParseException;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.app.domain.model.types.Alumno;
 import com.app.domain.model.types.Curso;
-import com.app.domain.model.types.CursoAcademico;
-import com.app.domain.model.types.Profesor;
 import com.app.domain.repositories.CursoRepository;
 
 @Service
@@ -112,81 +108,9 @@ public class CursoService {
 
 	// Otros metodos de negocio
 
-	/**
-	 * Buscar alumnos pertenecientes a un curso y profesor.
-	 * 
-	 * @author David Romero Alcaide
-	 * @param cursoId
-	 * @return
-	 */
-	public Collection<Alumno> getAlumnosEnCurso(Integer cursoId) {
-		Assert.isTrue(cursoId > 0);
-		Profesor profesor = profesorService.findPrincipal();
-		Assert.isTrue(profesorService.getCursosImparteDocencia().contains(
-				findOne(cursoId)));
-		Assert.isTrue(profesor.isIdentidadConfirmada());
-		return cursoRepositorio.getAlumnosEnCurso(cursoId);
-	}
 
-	/**
-	 * @author David Romero Alcaide
-	 * @param nivel
-	 * @param nivelEducativo
-	 * @param identificador
-	 * @param a
-	 */
-	public void find(int nivel, String nivelEducativo, char identificador,
-			Alumno a) {
-		Assert.isTrue(nivel > 0);
-		Assert.isTrue(nivelEducativo.equals("E.S.O.")
-				|| nivelEducativo.equals("Primaria")
-				|| nivelEducativo.equals("Baidentificadoriller"));
-		Assert.isTrue(
-				(identificador >= 'a' && identificador <= 'z') 
-				|| 
-				(identificador >= 'A' && identificador <= 'Z'));
-		Curso c = cursoRepositorio.findCurso(nivel, nivelEducativo,
-				identificador);
-		if (c == null) {
-			c = create();
-			c.setNivel(nivel);
-			c.setNivelEducativo(nivelEducativo);
-			c.setIdentificador(identificador);
-		}
-		c.addAlumno(a);
-		save(c);
-	}
 
-	/**
-	 * @author David Romero Alcaide
-	 * @param nivel
-	 * @param nivelEducativo
-	 * @param identificador
-	 * @throws ParseException
-	 */
-	public Curso findOrCreate(int nivel, String nivelEducativo,
-			char identificador) {
-		Assert.isTrue(nivel > 0);
-		Assert.isTrue(nivelEducativo.equals("E.S.O.")
-				|| nivelEducativo.equals("Primaria")
-				|| nivelEducativo.equals("Baidentificadoriller"));
-		Assert.isTrue(
-				(identificador >= 'a' && identificador <= 'z') 
-				|| 
-				(identificador >= 'A' && identificador <= 'Z'));
-		Curso c = cursoRepositorio.findCurso(nivel, nivelEducativo,
-				identificador);
-		if (c == null) {
-			c = create();
-			c.setNivel(nivel);
-			c.setNivelEducativo(nivelEducativo);
-			c.setIdentificador(identificador);
-			CursoAcademico cursoAcademico = cursoAcademicoService.findActual();
-			c.setCursoAcademico(cursoAcademico);
-		}
-		save(c);
-		return c;
-	}
+
 
 	/**
 	 * @author David Romero Alcaide

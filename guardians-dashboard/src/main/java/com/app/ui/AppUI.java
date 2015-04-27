@@ -29,13 +29,9 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.web.context.ContextLoaderListener;
 
 import com.app.infrastructure.security.AuthManager;
-import com.app.infrastructure.security.Authority;
 import com.app.infrastructure.security.LoginService;
 import com.app.infrastructure.security.UserAccount;
 import com.app.presenter.event.EventComunicationBus;
-import com.app.ui.login.view.LoginView;
-import com.app.ui.user.admin.view.AdminView;
-import com.app.ui.user.usuario.view.UsuarioView;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.DefaultErrorHandler;
@@ -217,15 +213,6 @@ public class AppUI extends UI implements ErrorHandler {
 		NavigatorUI navigator = new NavigatorUI(this, this);
 
 		navigator.addProvider(springViewProvider);
-
-		navigator.addViewChangeListener(new ViewChangeListenerUI());
-		navigator.addView("login", LoginView.class);
-
-		navigator.addView(Authority.ADMINISTRADOR, AdminView.class);
-
-		navigator.addView(Authority.PROFESOR, ProfesorView.class);
-		
-		navigator.addView(Authority.TUTOR, TutorView.class);
 
 		setNavigator(navigator);
 		Authentication authRememberMe = null;

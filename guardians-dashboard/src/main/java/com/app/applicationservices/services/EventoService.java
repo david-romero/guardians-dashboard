@@ -69,14 +69,11 @@ public class EventoService {
 	 */
 	public void save(Evento eventoJson) {
 		Assert.notNull(eventoJson);
-		Assert.notNull(eventoJson.getAsignatura());
+		Assert.notNull(eventoJson.getMateria());
 		Assert.notNull(eventoJson.getFecha());
-		Assert.notNull(eventoJson.getItemEvaluable());
+		Assert.notNull(eventoJson.getItemsEvaluables());
 		Assert.notNull(eventoJson.getProfesor());
-		Assert.isTrue(eventoJson.getAsignatura().getProfesor().equals(eventoJson.getProfesor()));
-		Assert.isTrue(eventoJson.getItemEvaluable().getAsignatura().equals(eventoJson.getAsignatura()));
-		Assert.isTrue(eventoJson.getFecha().equals(eventoJson.getItemEvaluable().getFecha()));
-		Assert.notNull(eventoJson.getItemEvaluable().getAlumno());
+		Assert.isTrue(eventoJson.getMateria().getProfesor().equals(eventoJson.getProfesor()));
 		eventoRepository.save(eventoJson);
 	}
 
@@ -100,72 +97,6 @@ public class EventoService {
 		return eventoRepository.findAllEventosProfesor(profesor.getId());
 	}
 
-	public Collection<Evento> findAllProfesor() {
-		Assert.notNull(profesorService.findPrincipal());
-		return findAllProfesor(profesorService.findPrincipal());
-	}
-
-	public Collection<Evento> findAllProfesorGrouped() {
-		Assert.notNull(profesorService.findPrincipal());
-		List<Evento> allEventos = Lists
-				.newArrayList(findAllProfesor(profesorService.findPrincipal()));
-		Set<Evento> eventos = Sets.newHashSet();
-		eventos.add(allEventos.get(0));
-		for (Evento e : allEventos) {
-			boolean existe = false;
-			for (Evento eventoGuardo : eventos) {
-
-				if (eventoGuardo.getAsignatura().equals(e.getAsignatura())
-						&& eventoGuardo.getFecha().equals(e.getFecha())
-						&& eventoGuardo
-								.getItemEvaluable()
-								.getClass()
-								.getSimpleName()
-								.compareTo(
-										e.getItemEvaluable().getClass()
-												.getSimpleName()) == 0) {
-					existe = true;
-				}
-			}
-			if (!existe) {
-				eventos.add(e);
-			}
-		}
-
-		return eventos;
-	}
-
-	public Collection<Evento> findAllProfesorGroupedAllTime() {
-		Assert.notNull(profesorService.findPrincipal());
-		List<Evento> allEventos = Lists
-				.newArrayList(findAllProfesorPasadoFuturo(profesorService
-						.findPrincipal()));
-		Set<Evento> eventos = Sets.newHashSet();
-		eventos.add(allEventos.get(0));
-		for (Evento e : allEventos) {
-			boolean existe = false;
-			for (Evento eventoGuardo : eventos) {
-
-				if (eventoGuardo.getAsignatura().equals(e.getAsignatura())
-						&& eventoGuardo.getFecha().equals(e.getFecha())
-						&& eventoGuardo
-								.getItemEvaluable()
-								.getClass()
-								.getSimpleName()
-								.compareTo(
-										e.getItemEvaluable().getClass()
-												.getSimpleName()) == 0) {
-					existe = true;
-				}
-			}
-			if (!existe) {
-				eventos.add(e);
-			}
-		}
-
-		return eventos;
-	}
-
 	/**
 	 * @author David Romero Alcaide
 	 * @param eventId
@@ -180,28 +111,7 @@ public class EventoService {
 		return eventoRepository.findAll();
 	}
 
-	/**
-	 * @author David Romero Alcaide
-	 * @param event
-	 * @return
-	 */
-	public Collection<Evento> findParecidos(final Evento event) {
-		List<Evento> allEventos = Lists.newArrayList(findAll());
-		List<Evento> filtrados = Lists.newArrayList(Iterables.filter(
-				allEventos, new Predicate<Evento>() {
-					public boolean apply(Evento p) {
-						return p.getAsignatura().equals(event.getAsignatura())
-								&& p.getFecha().equals(event.getFecha()) && p
-								.getItemEvaluable()
-								.getClass()
-								.getSimpleName()
-								.compareTo(
-										event.getItemEvaluable().getClass()
-												.getSimpleName()) == 0;
-					}
-				}));
-		return filtrados;
-	}
+
 
 	/**
 	 * @author David Romero Alcaide

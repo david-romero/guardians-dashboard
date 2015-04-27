@@ -6,13 +6,14 @@
  */
 package com.app.domain.model.types;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.Valid;
@@ -24,9 +25,11 @@ import org.springframework.util.Assert;
 import com.app.domain.model.DomainEntity;
 import com.app.domain.model.types.itemsevaluables.Actividad;
 import com.app.domain.model.types.itemsevaluables.Cuaderno;
-import com.app.domain.model.types.itemsevaluables.EjerciciosEntregados;
+import com.app.domain.model.types.itemsevaluables.Ejercicios;
 import com.app.domain.model.types.itemsevaluables.Examen;
+import com.app.domain.model.types.itemsevaluables.Otro;
 import com.app.domain.model.types.itemsevaluables.Trabajo;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -44,7 +47,7 @@ public class Evento extends DomainEntity {
 	 */
 	public Evento() {
 		super();
-
+		itemsEvaluables = Lists.newArrayList();
 	}
 
 	/**
@@ -84,11 +87,11 @@ public class Evento extends DomainEntity {
 	/**
 	 * Asignatura a la que está vinculada el evento
 	 */
-	private Asignatura asignatura;
+	private Materia materia;
 	/**
 	 * Item evaluable relacionado con el evento
 	 */
-	private ItemEvaluable itemEvaluable;
+	private Collection<ItemEvaluable> itemsEvaluables;
 
 	@Valid
 	@NotNull
@@ -114,26 +117,26 @@ public class Evento extends DomainEntity {
 	/**
 	 * @return the asignatura
 	 */
-	public Asignatura getAsignatura() {
-		return asignatura;
+	public Materia getMateria() {
+		return materia;
 	}
 
 	/**
 	 * @param asignatura
 	 *            the asignatura to set
 	 */
-	public void setAsignatura(Asignatura asignatura) {
-		this.asignatura = asignatura;
+	public void setMateria(Materia materia) {
+		this.materia = materia;
 	}
 
 	@Valid
 	@NotNull
-	@OneToOne(optional = false)
+	@OneToMany
 	/**
 	 * @return the itemEvaluable
 	 */
-	public ItemEvaluable getItemEvaluable() {
-		return itemEvaluable;
+	public Collection<ItemEvaluable> getItemsEvaluables() {
+		return itemsEvaluables;
 	}
 
 	/**
@@ -141,12 +144,17 @@ public class Evento extends DomainEntity {
 	 *            the itemEvaluable to set Solo se podrán marcar los exámenes,
 	 *            trabajos, cuardernos, actividades o ejercicios entregados
 	 */
-	public void setItemEvaluable(ItemEvaluable itemEvaluable) {
-		Assert.isTrue(itemEvaluable instanceof Examen
-				|| itemEvaluable instanceof Trabajo
-				|| itemEvaluable instanceof Cuaderno
-				|| itemEvaluable instanceof Actividad || itemEvaluable instanceof EjerciciosEntregados);
-		this.itemEvaluable = itemEvaluable;
+	public void setItemsEvaluables(Collection<ItemEvaluable> itemsEvaluables) {
+		itemsEvaluables.forEach(itemEvaluable->{
+			Assert.isTrue(itemEvaluable instanceof Examen
+					|| itemEvaluable instanceof Trabajo
+					|| itemEvaluable instanceof Cuaderno
+					|| itemEvaluable instanceof Actividad 
+					|| itemEvaluable instanceof Ejercicios
+					|| itemEvaluable instanceof Otro);
+		});
+		
+		this.itemsEvaluables = itemsEvaluables;
 	}
 
 	/*
@@ -157,9 +165,9 @@ public class Evento extends DomainEntity {
 	@Override
 	public Evento clone() throws CloneNotSupportedException {
 		Evento clone = new Evento();
-		clone.setAsignatura(asignatura);
+		clone.setMateria(materia);
 		clone.setFecha(fecha);
-		clone.setItemEvaluable(itemEvaluable);
+		clone.setItemsEvaluables(itemsEvaluables);
 		clone.setProfesor(profesor);
 		return clone;
 	}

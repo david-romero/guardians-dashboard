@@ -84,9 +84,9 @@ public class ExamenService implements
 	 */
 	public void save(Examen exam) {
 		Assert.notNull(exam);
-		Assert.notNull(exam.getAsignatura());
+		Assert.notNull(exam.getMateria());
 		Assert.notNull(exam.getEvaluacion());
-		Assert.isTrue(exam.getAlumno().getCurso().equals(exam.getAsignatura().getCurso()));
+		Assert.isTrue(exam.getAlumno().getCursos().contains(exam.getMateria().getCurso()));
 		examenRepositorio.save(exam);
 	}
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.app.domain.model.types.Asignatura;
 import com.app.domain.model.types.Curso;
+import com.app.domain.model.types.InstanciaCurso;
 import com.app.domain.model.types.Profesor;
 
 @Repository
@@ -27,17 +28,14 @@ import com.app.domain.model.types.Profesor;
  */
 public interface ProfesorRepository extends JpaRepository<Profesor, Integer> {
 
-	@Query("select asign.curso from Profesor p join p.asignaturas asign  where p.id= ?1")
+	@Query("select materia.curso from Profesor p join p.materias materia  where p.id= ?1")
 	/**
 	 * Devuelve los cursos en los cuales imparte clase
 	 * @author David Romero Alcaide
 	 * @param id
 	 * @return
 	 */
-	public Collection<Curso> getCursosDondeImparteClase(Integer id);
-
-	@Query("select a from Curso c join c.asignaturas a where a.profesor.id=?2 and c.id=?1")
-	public Asignatura getAsignaturaCursoProfesor(int cursoId, int profesorId);
+	public Collection<InstanciaCurso> getCursosDondeImparteClase(Integer id);
 
 	@Query("select p from Profesor p where p.userAccount.id = ?1")
 	Profesor findByUserAccountId(int userAccountId);

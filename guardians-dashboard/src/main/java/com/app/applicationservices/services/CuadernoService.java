@@ -58,7 +58,7 @@ public class CuadernoService implements
 	 */
 	public void save(ItemEvaluable item) {
 		Assert.notNull(item);
-		Assert.notNull(item.getAsignatura());
+		Assert.notNull(item.getMateria());
 		Assert.notNull(item.getEvaluacion());
 		Cuaderno ejer = (Cuaderno) item;
 		repositorio.save(ejer);

@@ -7,7 +7,7 @@ package com.app.domain.model.types;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -21,6 +21,8 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.util.Assert;
 
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
+
 @Entity
 @Access(AccessType.PROPERTY)
 /**
@@ -32,11 +34,18 @@ public class Profesor extends Persona {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -3057914910504296347L;
+
+	/**
+	 * 
+	 */
 	public Profesor() {
 		super();
 		this.eventos = new ArrayList<Evento>();
-		this.asignaturas = new ArrayList<Asignatura>();
+		this.materias = Sets.newHashSet();
 		this.notificaciones = new ArrayList<Notificacion>();
+		this.relacionesLaborales = Sets.newHashSet();
+		this.cursos = Sets.newHashSet();
 	}
 
 	// Atributos
@@ -46,26 +55,6 @@ public class Profesor extends Persona {
 	 * profesor en torno a concertar una cita
 	 */
 	private String preferenciasCita;
-	/**
-	 * Instituto en el que imparte clase el profesor
-	 */
-	private String instituto;
-
-	/**
-	 * @return instituto
-	 */
-	@NotBlank
-	public String getInstituto() {
-		return instituto;
-	}
-
-	/**
-	 * @param instituto
-	 *            the instituto to set Establecer el instituto
-	 */
-	public void setInstituto(String instituto) {
-		this.instituto = instituto;
-	}
 
 	/**
 	 * @return the preferenciasCita
@@ -92,11 +81,52 @@ public class Profesor extends Persona {
 	/**
 	 * Asignaturas en las que imparte docencias el profesor
 	 */
-	private Collection<Asignatura> asignaturas;
+	private Collection<Materia> materias;
 	/**
 	 * Notificaciones enviadas y recibidas por el profesor
 	 */
 	private Collection<Notificacion> notificaciones;
+	
+	private Collection<RelacionLaboral> relacionesLaborales;
+	
+	private Collection<InstanciaCurso> cursos;
+	
+	
+	@NotNull
+	@OneToMany(mappedBy = "profesor")
+	/**
+	 * @return relacionesLaborales
+	 */
+	public Collection<RelacionLaboral> getRelacionesLaborales() {
+		return relacionesLaborales;
+	}
+
+	/**
+	 * @param relacionesLaborales the relacionesLaborales to set
+	 * Establecer el relacionesLaborales
+	 */
+	public void setRelacionesLaborales(
+			Collection<RelacionLaboral> relacionesLaborales) {
+		this.relacionesLaborales = relacionesLaborales;
+	}
+	
+	
+	@NotNull
+	@OneToMany(mappedBy = "profesor")
+	/**
+	 * @return cursos
+	 */
+	public Collection<InstanciaCurso> getCursos() {
+		return cursos;
+	}
+
+	/**
+	 * @param cursos the cursos to set
+	 * Establecer el cursos
+	 */
+	public void setCursos(Collection<InstanciaCurso> cursos) {
+		this.cursos = cursos;
+	}
 
 	@NotNull
 	@OneToMany(mappedBy = "profesor")
@@ -117,7 +147,7 @@ public class Profesor extends Persona {
 	}
 
 	public void addEvento(Evento evento) {
-		Assert.isTrue(this.asignaturas.contains(evento.getAsignatura()));
+		Assert.isTrue(this.materias.contains(evento.getMateria()));
 		this.eventos.add(evento);
 		evento.setProfesor(this);
 	}
@@ -128,43 +158,16 @@ public class Profesor extends Persona {
 	/**
 	 * @return the asignaturas
 	 */
-	public Collection<Asignatura> getAsignaturas() {
-		return asignaturas;
+	public Collection<Materia> getMaterias() {
+		return materias;
 	}
 
 	/**
 	 * @param asignaturas
 	 *            the asignaturas to set
 	 */
-	public void setAsignaturas(Collection<Asignatura> asignaturas) {
-		this.asignaturas = asignaturas;
-	}
-
-	/**
-	 * 
-	 * @author David Romero Alcaide
-	 * @param asignatura
-	 */
-	public void addAsignaturas(Asignatura asignatura) {
-		Assert.notNull(asignatura);
-		Assert.isTrue(!this.asignaturas.contains(asignatura));
-		Collection<String> nombresAsignaturas = getNombresAsignaturas();
-		Assert.isTrue(!nombresAsignaturas.contains(asignatura.getNombre()));
-		this.asignaturas.add(asignatura);
-		asignatura.setProfesor(this);
-	}
-
-	/**
-	 * 
-	 * @author David Romero Alcaide
-	 * @param asignatura
-	 * @return
-	 */
-	public boolean removeAsignatura(Asignatura asignatura) {
-		Assert.notNull(asignatura);
-		Assert.isTrue(this.asignaturas.contains(asignatura));
-		asignatura.setProfesor(null);
-		return this.asignaturas.remove(asignatura);
+	public void setMaterias(Collection<Materia> materias) {
+		this.materias = materias;
 	}
 
 	@NotNull
@@ -211,11 +214,9 @@ public class Profesor extends Persona {
 	 * @return
 	 */
 	private Collection<String> getNombresAsignaturas() {
-		List<String> lista = new ArrayList<String>();
-		for (Asignatura asignatura : this.asignaturas) {
-			lista.add(asignatura.getNombre());
-		}
-		return lista;
+		return this.materias.stream().map(materia->{
+			return materia.getAsignatura().getNombre();
+		}).collect(Collectors.toList());
 	}
 
 	/*

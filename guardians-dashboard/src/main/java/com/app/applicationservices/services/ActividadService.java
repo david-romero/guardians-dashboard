@@ -52,7 +52,7 @@ public class ActividadService implements
 	 */
 	public void save(ItemEvaluable item) {
 		Assert.notNull(item);
-		Assert.notNull(item.getAsignatura());
+		Assert.notNull(item.getMateria());
 		Assert.notNull(item.getEvaluacion());
 		Actividad acti = (Actividad) item;
 		repositorio.save(acti);
@@ -61,7 +61,7 @@ public class ActividadService implements
 	public void delete(Actividad acti) {
 		Assert.notNull(acti);
 		Assert.isTrue(acti.getId()>0);
-		Assert.notNull(acti.getAsignatura());
+		Assert.notNull(acti.getMateria());
 		repositorio.delete(acti);
 	}
 

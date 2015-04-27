@@ -15,11 +15,8 @@ import com.app.domain.model.types.Administrador;
 import com.app.infrastructure.security.Authority;
 import com.app.ui.AppUI;
 import com.app.ui.NavigatorUI;
-import com.app.ui.ViewChangeListenerUI;
 import com.app.ui.user.admin.presenter.AdminPresenter;
-import com.app.ui.user.admin.view.banear.usuarios.BanearUsuarioView;
 import com.app.ui.user.menu.MenuComponent;
-import com.app.ui.user.panelControl.view.PanelControlView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -78,10 +75,7 @@ public class AdminView extends HorizontalLayout implements View {
         addComponent(content);
         setExpandRatio(content, 1.0f);
         NavigatorUI navigator = new NavigatorUI(AppUI.getCurrent(), content);
-        navigator.addViewChangeListener(new ViewChangeListenerUI());
         navigator.addProvider(( (AppUI) AppUI.getCurrent()).getSpringViewProvider());
-        navigator.addView("BanearUsuario", BanearUsuarioView.class);
-        navigator.addView("PaneldeControl", PanelControlView.class);
         navigator.navigateTo("PaneldeControl");
         
 	}

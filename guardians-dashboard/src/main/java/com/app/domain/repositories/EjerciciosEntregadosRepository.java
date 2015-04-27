@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.app.domain.model.types.itemsevaluables.EjerciciosEntregados;
+import com.app.domain.model.types.itemsevaluables.Ejercicios;
 
 @Repository
 /**
@@ -25,8 +25,8 @@ import com.app.domain.model.types.itemsevaluables.EjerciciosEntregados;
  *
  */
 public interface EjerciciosEntregadosRepository extends
-		JpaRepository<EjerciciosEntregados, Integer> {
-	@Query("select e from EjerciciosEntregados e where e.fecha = ?1 and e.asignatura.id = ?2 "
+		JpaRepository<Ejercicios, Integer> {
+	@Query("select e from Ejercicios e where e.fecha = ?1 and e.materia.id = ?2 "
 			+ "and e.titulo = ?3")
 	/**
 	 * 
@@ -36,6 +36,6 @@ public interface EjerciciosEntregadosRepository extends
 	 * @param title
 	 * @return
 	 */
-	Collection<EjerciciosEntregados> findByDateAsignaturaTitle(Date date,
+	Collection<Ejercicios> findByDateAsignaturaTitle(Date date,
 			int asignId, String title);
 }

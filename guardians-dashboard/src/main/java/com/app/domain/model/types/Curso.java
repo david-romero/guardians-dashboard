@@ -11,6 +11,7 @@ package com.app.domain.model.types;
  */
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -40,7 +41,6 @@ public class Curso extends DomainEntity {
 	 */
 	public Curso() {
 		super();
-		this.alumnos = new ArrayList<Alumno>();
 		this.asignaturas = new ArrayList<Asignatura>();
 	}
 
@@ -111,83 +111,19 @@ public class Curso extends DomainEntity {
 
 	// Relaciones
 
-	/**
-	 * Curso academico al cual pertenece el alumno
-	 */
-	private CursoAcademico cursoAcademico;
 
-	/**
-	 * alumnos adscritos en este curso
-	 */
-	private Collection<Alumno> alumnos;
+
 
 	/**
 	 * Asignaturas vinculadas a este curso
 	 */
 	private Collection<Asignatura> asignaturas;
+	
+	private Instituto Instituto;
 
-	@NotNull
+	
+
 	@Valid
-	@ManyToOne()
-	/**
-	 * @return cursoAcademico
-	 */
-	public CursoAcademico getCursoAcademico() {
-		return cursoAcademico;
-	}
-
-	/**
-	 * @param cursoAcademico
-	 *            the cursoAcademico to set Establecer el cursoAcademico
-	 */
-	public void setCursoAcademico(CursoAcademico cursoAcademico) {
-		this.cursoAcademico = cursoAcademico;
-	}
-
-	@NotNull
-	@OneToMany(mappedBy = "curso")
-	/**
-	 * @return the alumnos
-	 */
-	public Collection<Alumno> getAlumnos() {
-		return alumnos;
-	}
-
-	/**
-	 * @param alumnos
-	 *            the alumnos to set
-	 */
-	public void setAlumnos(Collection<Alumno> alumnos) {
-		this.alumnos = alumnos;
-	}
-
-	/**
-	 * Añadir un alumno al curso
-	 * 
-	 * @author David Romero Alcaide
-	 * @param alumno
-	 */
-	public void addAlumno(Alumno alumno) {
-		Assert.isTrue(this.nivel > 0 && this.nivelEducativo.length() > 0
-				&& this.identificador != ' ');
-		Assert.isTrue(!(this.alumnos.contains(alumno)));
-		this.alumnos.add(alumno);
-		alumno.setCurso(this);
-	}
-
-	/**
-	 * Eliminar al alumno recibido de un curso
-	 * 
-	 * @author David Romero Alcaide
-	 * @param alumno
-	 * @return
-	 */
-	public boolean removeAlumno(Alumno alumno) {
-		Assert.isTrue(this.alumnos.contains(alumno));
-		alumno.setCurso(null);
-		return this.alumnos.remove(alumno);
-	}
-
 	@NotNull
 	@OneToMany(mappedBy = "curso")
 	/**
@@ -205,6 +141,25 @@ public class Curso extends DomainEntity {
 	 */
 	public void setAsignaturas(Collection<Asignatura> asignaturas) {
 		this.asignaturas = asignaturas;
+	}
+
+	
+	@Valid
+	@NotNull
+	@ManyToOne(optional = false)
+	/**
+	 * @return instituto
+	 */
+	public Instituto getInstituto() {
+		return Instituto;
+	}
+
+	/**
+	 * @param instituto the instituto to set
+	 * Establecer el instituto
+	 */
+	public void setInstituto(Instituto instituto) {
+		Instituto = instituto;
 	}
 
 	/**

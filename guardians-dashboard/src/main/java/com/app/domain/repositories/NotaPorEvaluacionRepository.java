@@ -22,7 +22,7 @@ public interface NotaPorEvaluacionRepository extends
 		JpaRepository<NotaPorEvaluacion, Integer> {
 
 	@Query("select nota from NotaPorEvaluacion nota where nota.alumno.id = ?1 and"
-			+ " nota.evaluacion.indicador = ?2 and nota.asignatura.id = ?3")
+			+ " nota.evaluacion.indicador = ?2 and nota.materia.id = ?3")
 	public NotaPorEvaluacion findByAlumnoAndEvaluacion(int alumnoId,
 			int evaluacionId, int asignaturaId);
 

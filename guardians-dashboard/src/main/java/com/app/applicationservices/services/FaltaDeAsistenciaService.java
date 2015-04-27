@@ -113,9 +113,9 @@ public class FaltaDeAsistenciaService implements
 	 * @param profesor
 	 */
 	public void save(FaltaDeAsistencia falta) {
-		Assert.notNull(falta.getAsignatura(), "pasarLista.asignatura");
+		Assert.notNull(falta.getMateria(), "pasarLista.asignatura");
 
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada());
 
 		Assert.notNull(falta, "pasarLista.error");
@@ -123,7 +123,7 @@ public class FaltaDeAsistenciaService implements
 				falta.getFecha().after(
 						new Date(System.currentTimeMillis() - 18000000)),
 				"pasarLista.error");
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada(), "pasarLista.error");
 
 		faltaDeAsistenciaRepositorio.save(falta);
@@ -137,9 +137,9 @@ public class FaltaDeAsistenciaService implements
 	 */
 	public void delete(FaltaDeAsistencia falta) {
 		Assert.notNull(falta);
-		Assert.notNull(falta.getAsignatura());
-		Assert.notNull(falta.getAsignatura().getProfesor());
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.notNull(falta.getMateria());
+		Assert.notNull(falta.getMateria().getProfesor());
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada());
 		Assert.notNull(falta);
 		faltaDeAsistenciaRepositorio.delete(falta);

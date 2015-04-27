@@ -1,0 +1,16 @@
+/**
+* ItemEvaluableComparator.java
+* guardians-dashboard
+* 16/4/2015 20:31:44
+* Copyright David
+* com.app.domain.model.types.util
+*/
+package com.app.domain.model.types.util;
+
+/**
+ * @author David
+ *
+ */
+public class ItemEvaluableComparator {
+
+}

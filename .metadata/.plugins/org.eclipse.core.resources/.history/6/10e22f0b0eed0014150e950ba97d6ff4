@@ -1,0 +1,19 @@
+/**
+* ConfirmarIdentidadView.java
+* guardians-dashboard
+* 27/4/2015 20:48:39
+* Copyright David
+* com.app.ui.user.admin.view.confirmar.identidad
+*/
+package com.app.ui.user.admin.view.confirmar.identidad;
+
+import com.vaadin.navigator.View;
+import com.vaadin.ui.VerticalLayout;
+
+/**
+ * @author David
+ *
+ */
+public class ConfirmarIdentidadView extends VerticalLayout implements View{
+
+}

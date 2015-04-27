@@ -23,8 +23,6 @@ import com.app.domain.model.types.Asignatura;
 public interface AsignaturaRepository extends
 		JpaRepository<Asignatura, Integer> {
 
-	@Query("select a from Asignatura a where a.profesor.id=?1")
-	Collection<Asignatura> findAsignaturasDeProfesor(int profesorId);
 
 	@Query("select a from Asignatura a where a.nombre=?1")
 	Collection<Asignatura> findAsignaturasPorNombre(String nombre);

@@ -1,0 +1,66 @@
+/**
+* InstanciaCurso.java
+* guardians-dashboard
+* 16/4/2015 20:27:12
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+import java.util.Collection;
+import java.util.Map;
+
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.util.Assert;
+
+import com.app.domain.model.DomainEntity;
+
+/**
+ * @author David
+ *
+ */
+public class InstanciaCurso extends DomainEntity{
+
+	private Curso curso;
+	
+	private CursoAcademico cursoAcademico;
+	
+	/**
+	 * alumnos adscritos en este curso
+	 */
+	private Map<CursoAcademico,Alumno> alumnosPorCursoAcademico;
+	
+	@NotNull
+	@OneToMany(mappedBy = "curso")
+	/**
+	 * @return the alumnos
+	 */
+	public Collection<Alumno> getAlumnos() {
+		return alumnos;
+	}
+
+	/**
+	 * @param alumnos
+	 *            the alumnos to set
+	 */
+	public void setAlumnos(Collection<Alumno> alumnos) {
+		this.alumnos = alumnos;
+	}
+
+	/**
+	 * Añadir un alumno al curso
+	 * 
+	 * @author David Romero Alcaide
+	 * @param alumno
+	 */
+	public void addAlumno(Alumno alumno,Curso academico) {
+		Assert.isTrue(this.nivel > 0 && this.nivelEducativo.length() > 0
+				&& this.identificador != ' ');
+		Assert.isTrue(!(this.alumnos.contains(alumno)));
+		this.alumnos.add(alumno);
+		alumno.setCurso(this);
+	}
+	
+}

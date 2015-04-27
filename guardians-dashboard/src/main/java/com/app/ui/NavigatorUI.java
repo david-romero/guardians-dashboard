@@ -20,6 +20,7 @@ import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.server.Page;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
@@ -127,9 +128,7 @@ public class NavigatorUI extends Navigator {
 	 */
 	private void goToLoginView() {
 		SecurityContextHolder.clearContext();
-		this.navigateTo("login");
+		Page.getCurrent().reload();
 	}
 	
-	
-
 }

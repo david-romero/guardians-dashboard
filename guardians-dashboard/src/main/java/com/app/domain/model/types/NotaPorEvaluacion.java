@@ -22,7 +22,7 @@ import com.app.domain.model.DomainEntity;
 @Entity
 @Access(AccessType.PROPERTY)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "alumno_id",
-		"asignatura_id", "evaluacion_id" }))
+		"materia_id", "evaluacion_id" }))
 /**
  * @author David
  * Clase que representa a la nota obtenida por una alumno para una asignatura
@@ -72,7 +72,7 @@ public class NotaPorEvaluacion extends DomainEntity {
 	/**
 	 * Asignatura a la que pertenece la calificación.
 	 */
-	private Asignatura asignatura;
+	private Materia materia;
 
 	@Valid
 	@NotNull
@@ -80,16 +80,16 @@ public class NotaPorEvaluacion extends DomainEntity {
 	/**
 	 * @return the asignatura
 	 */
-	public Asignatura getAsignatura() {
-		return asignatura;
+	public Materia getMateria() {
+		return materia;
 	}
 
 	/**
 	 * @param asignatura
 	 *            the asignatura to set
 	 */
-	public void setAsignatura(Asignatura asignatura) {
-		this.asignatura = asignatura;
+	public void setMateria(Materia materia) {
+		this.materia = materia;
 	}
 
 	@Valid

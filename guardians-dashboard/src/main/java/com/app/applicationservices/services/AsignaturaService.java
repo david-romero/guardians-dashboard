@@ -9,6 +9,7 @@ package com.app.applicationservices.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import org.springframework.util.Assert;
 
 import com.app.domain.model.types.Asignatura;
 import com.app.domain.model.types.Curso;
+import com.app.domain.model.types.CursoAcademico;
+import com.app.domain.model.types.Materia;
 import com.app.domain.model.types.Profesor;
 import com.app.domain.repositories.AsignaturaRepository;
 import com.google.common.base.Predicate;
@@ -47,6 +50,9 @@ public class AsignaturaService {
 
 	@Autowired
 	private ProfesorService profesorService;
+	
+	@Autowired
+	private CursoAcademicoService cursoAcademicoService;
 
 	// Métodos CRUD
 
@@ -105,31 +111,22 @@ public class AsignaturaService {
 	public void delete(Asignatura asign) {
 		Assert.notNull(asign);
 		Assert.isTrue(asign.getId() > 0);
-		Assert.isTrue(asign.getProfesor().isIdentidadConfirmada());
-		Assert.isTrue(profesorService.findPrincipal().isIdentidadConfirmada());
 		asignaturaRepositorio.delete(asign);
 	}
 
 	// Otros métodos de negocio
 
-	/**
-	 * @author David Romero Alcaide
-	 * @return
-	 */
-	public Collection<Asignatura> findAllByProfesor() {
-		Profesor p = profesorService.findPrincipal();
-		Assert.notNull(p);
-		Assert.isTrue(p.isIdentidadConfirmada());
-		return asignaturaRepositorio.findAsignaturasDeProfesor(p.getId());
-	}
 
 	/**
 	 * @author David Romero Alcaide
 	 * @return
 	 */
-	public Collection<Asignatura> findAllByProfesor(Profesor p) {
+	public Collection<Materia> findAllByProfesor(Profesor p) {
 		Assert.notNull(p);
-		return asignaturaRepositorio.findAsignaturasDeProfesor(p.getId());
+		CursoAcademico cursoAcademico = cursoAcademicoService.findActual();
+		return p.getMaterias().stream().filter(materia->{
+			return materia.getCursoAcademico().equals(cursoAcademico);
+		}).collect(Collectors.toList());
 	}
 
 	/**
@@ -156,19 +153,19 @@ public class AsignaturaService {
 	 * @param nombre
 	 * @return
 	 */
-	public Asignatura findByProfesorCurso(Profesor p, final Curso curso,
+	public Materia findByProfesorCurso(Profesor p, final Curso curso,
 			final String nombre) {
 
-		List<Asignatura> asignaturasProfesor = Lists
+		List<Materia> asignaturasProfesor = Lists
 				.newArrayList(findAllByProfesor(p));
-		Asignatura buscada = Iterables.find(asignaturasProfesor,
-				new Predicate<Asignatura>() {
+		Materia buscada = Iterables.find(asignaturasProfesor,
+				new Predicate<Materia>() {
 
 					
-					public boolean apply(Asignatura input) {
-						return input.getNombre().compareTo(nombre) == 0
-								&& input.getNombre().equals(nombre)
-								&& input.getCurso().equals(curso);
+					public boolean apply(Materia input) {
+						return input.getAsignatura().getNombre().compareTo(nombre) == 0
+								&& input.getAsignatura().getNombre().equals(nombre)
+								&& input.getAsignatura().getCurso().equals(curso);
 					}
 				});
 		Assert.notNull(buscada);

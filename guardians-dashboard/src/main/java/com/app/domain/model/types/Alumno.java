@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -23,7 +21,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,14 +29,15 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortComparator;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
 import com.app.domain.model.DomainEntity;
+import com.app.domain.model.types.util.ItemEvaluableComparator;
 import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -57,6 +55,7 @@ public class Alumno extends DomainEntity {
 		this.itemsEvaluables = Lists.newArrayList();
 		this.padresMadresOTutores = Lists.newArrayList();
 		this.notasPorEvaluacion = Lists.newArrayList();
+		this.matriculas = Sets.newHashSet();
 	}
 
 	// Atributos
@@ -207,9 +206,13 @@ public class Alumno extends DomainEntity {
 	 */
 	private Collection<NotaPorEvaluacion> notasPorEvaluacion;
 	/**
+	 * Notas por evaluación y asignatura del alumno
+	 */
+	private Collection<Matricula> matriculas;
+	/**
 	 * Curso al que pertenece el alumno
 	 */
-	private Curso curso;
+	private Collection<InstanciaCurso> cursos;
 
 	@NotNull
 	@ManyToMany(cascade = { CascadeType.PERSIST })
@@ -229,6 +232,24 @@ public class Alumno extends DomainEntity {
 	public void setPadresMadresOTutores(
 			Collection<PadreMadreOTutor> padresMadresOTutores) {
 		this.padresMadresOTutores = padresMadresOTutores;
+	}
+	
+	@Valid
+	@NotNull
+	@ManyToMany()
+	/**
+	 * @return matriculas
+	 */
+	public Collection<Matricula> getMatriculas() {
+		return matriculas;
+	}
+
+	/**
+	 * @param matriculas the matriculas to set
+	 * Establecer el matriculas
+	 */
+	public void setMatriculas(Collection<Matricula> matriculas) {
+		this.matriculas = matriculas;
 	}
 
 	/**
@@ -256,25 +277,26 @@ public class Alumno extends DomainEntity {
 
 	@Valid
 	@NotNull
-	@ManyToOne(optional = false)
+	@ManyToMany
 	/**
 	 * @return the curso
 	 */
-	public Curso getCurso() {
-		return curso;
+	public Collection<InstanciaCurso> getCursos() {
+		return cursos;
 	}
 
 	/**
 	 * @param curso
 	 *            the curso to set
 	 */
-	public void setCurso(Curso curso) {
-		this.curso = curso;
+	public void setCursos(Collection<InstanciaCurso> cursos) {
+		this.cursos = cursos;
 	}
+
 
 	@NotNull
 	@OneToMany(mappedBy = "alumno", cascade = { CascadeType.ALL })
-	@Sort(type = SortType.NATURAL)
+	@SortComparator(value = ItemEvaluableComparator.class)
 	/**
 	 * Debería devolver una collection que no se pudise modificar pero
 	 * con la tecnología actual es imposible
@@ -320,8 +342,7 @@ public class Alumno extends DomainEntity {
 	 */
 	public void addNotaPorEvaluacion(NotaPorEvaluacion notaPorEvaluacion) {
 		Assert.notNull(notaPorEvaluacion);
-		Assert.isTrue(notaPorEvaluacion.getAsignatura().getCurso()
-				.equals(curso));
+		Assert.isTrue(this.getCursos().contains(notaPorEvaluacion.getMateria().getCurso()));
 		this.notasPorEvaluacion.add(notaPorEvaluacion);
 		notaPorEvaluacion.setAlumno(this);
 	}
@@ -346,8 +367,7 @@ public class Alumno extends DomainEntity {
 	@Override
 	public String toString() {
 		return (nombre != null ? "" + nombre + " " : "")
-				+ (apellidos != null ? "" + apellidos + ", " : "")
-				+ (curso != null ? "Curso: " + curso : "");
+				+ (apellidos != null ? "" + apellidos + ", " : "");
 	}
 
 	/* (non-Javadoc)

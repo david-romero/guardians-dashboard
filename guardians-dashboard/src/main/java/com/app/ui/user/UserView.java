@@ -8,12 +8,13 @@
 package com.app.ui.user;
 
 import com.app.infrastructure.security.Authority;
+import com.vaadin.navigator.View;
 
 /**
  * @author DRA
  *
  */
-public interface UserView {
+public interface UserView extends View{
 
 	public Authority getRol();
 	

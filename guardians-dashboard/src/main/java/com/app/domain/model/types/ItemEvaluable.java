@@ -6,8 +6,6 @@
  */
 package com.app.domain.model.types;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Access;
@@ -15,7 +13,6 @@ import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,7 +21,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.util.Assert;
 
 import com.app.domain.model.DomainEntity;
 
@@ -115,7 +111,7 @@ public abstract class ItemEvaluable extends DomainEntity {
 	/**
 	 * Asignatura a la cual pertenece el item
 	 */
-	private Asignatura asignatura;
+	private Materia materia;
 	/**
 	 * Día de calendario en el que ocurrió el item
 	 */
@@ -145,16 +141,16 @@ public abstract class ItemEvaluable extends DomainEntity {
 	/**
 	 * @return the asignatura
 	 */
-	public Asignatura getAsignatura() {
-		return asignatura;
+	public Materia getMateria() {
+		return materia;
 	}
 
 	/**
 	 * @param asignatura
 	 *            the asignatura to set
 	 */
-	public void setAsignatura(Asignatura asignatura) {
-		this.asignatura = asignatura;
+	public void setMateria(Materia materia) {
+		this.materia = materia;
 	}
 
 	@Valid

@@ -26,7 +26,7 @@ import com.app.domain.model.types.itemsevaluables.FaltaDeAsistencia;
  */
 public interface FaltaDeAsistenciaRepository extends
 		JpaRepository<FaltaDeAsistencia, Integer> {
-	@Query("select e from FaltaDeAsistencia e where e.fecha = ?1 and e.asignatura.id = ?2 "
+	@Query("select e from FaltaDeAsistencia e where e.fecha = ?1 and e.materia.id = ?2 "
 			+ "and e.titulo = ?3")
 	/**
 	 * 
@@ -39,7 +39,7 @@ public interface FaltaDeAsistenciaRepository extends
 	Collection<FaltaDeAsistencia> findByDateAsignaturaTitle(Date date,
 			int asignId, String title);
 
-	@Query("select e from FaltaDeAsistencia e where  e.asignatura.id = ?1 "
+	@Query("select e from FaltaDeAsistencia e where  e.materia.id = ?1 "
 			+ "")
 	/**
 	 * @author David Romero Alcaide

@@ -18,8 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -30,12 +32,17 @@ import org.springframework.util.Assert;
 import com.app.domain.model.types.Alumno;
 import com.app.domain.model.types.Asignatura;
 import com.app.domain.model.types.Curso;
+import com.app.domain.model.types.InstanciaCurso;
 import com.app.domain.model.types.ItemEvaluable;
+import com.app.domain.model.types.Materia;
 import com.app.domain.model.types.NotaPorEvaluacion;
 import com.app.domain.model.types.PadreMadreOTutor;
 import com.app.domain.model.types.Profesor;
+import com.app.domain.model.types.itemsevaluables.Actividad;
+import com.app.domain.model.types.itemsevaluables.Examen;
 import com.app.domain.model.types.itemsevaluables.FaltaDeAsistencia;
 import com.app.domain.model.types.itemsevaluables.Retraso;
+import com.app.domain.model.types.itemsevaluables.Trabajo;
 import com.app.domain.repositories.AlumnoRepository;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -74,7 +81,13 @@ public class AlumnoService {
 	/**
 	 * Servicio para el curso del alumno
 	 */
-	private CursoService cursoService;
+	private InstanciaCursoService cursoService;
+	
+	@Autowired
+	/**
+	 * Servicio para el curso del alumno
+	 */
+	private CursoAcademicoService cursoAcademicoService;
 
 	@Autowired
 	/**
@@ -122,9 +135,6 @@ public class AlumnoService {
 	 */
 	public Alumno create() {
 		Alumno a = new Alumno();
-		Curso c = new Curso();
-		c.setIdentificador(' ');
-		a.setCurso(c);
 		return a;
 	}
 
@@ -179,13 +189,11 @@ public class AlumnoService {
 	 * @param a
 	 * @param alumno
 	 */
-	public void establecerRetraso(Asignatura a, Alumno alumno) {
+	public void establecerRetraso(Materia a, Alumno alumno) {
 		Assert.notNull(a, "pasarLista.asignatura");
 		Assert.notNull(alumno, "pasarLista.idAlumno");
 		String except = "pasarLista.cursoAlum";
 		Assert.isTrue(a.getCurso().getAlumnos().contains(alumno),
-				except);
-		Assert.isTrue(alumno.getCurso().getAsignaturas().contains(a),
 				except);
 		Assert.isTrue(!(existeRetrasoEnAsignaturaParaHoy(a, alumno)),
 				"pasarLista.yaExiste");
@@ -200,7 +208,7 @@ public class AlumnoService {
 		ItemEvaluable item = retrasoService.create();
 
 		item.setFecha(new Date(System.currentTimeMillis()));
-		item.setAsignatura(a);
+		item.setMateria(a);
 		item.setCalificacion(0.0);
 		item.setEvaluacion(evaluacionService.findByDate(new Date(System
 				.currentTimeMillis())));
@@ -213,11 +221,11 @@ public class AlumnoService {
 	 * @param a
 	 * @param asig
 	 */
-	private boolean existeRetrasoEnAsignaturaParaHoy(Asignatura asig, Alumno a) {
+	private boolean existeRetrasoEnAsignaturaParaHoy(Materia asig, Alumno a) {
 		boolean result = false;
 		Assert.isTrue(asig.getProfesor().isIdentidadConfirmada());
 		for (ItemEvaluable items : a.getItemsEvaluables()) {
-			if (items instanceof Retraso && items.getAsignatura().equals(asig)) {
+			if (items instanceof Retraso && items.getMateria().equals(asig)) {
 				result = true;
 			}
 		}
@@ -241,8 +249,8 @@ public class AlumnoService {
 	 * @param alum
 	 * @return
 	 */
-	public List<NotaPorEvaluacion> obtenerNotasPorEvaluacion(Alumno alum,Asignatura asignatura) {
-		Map<String, Integer> criterios = asignatura.getCriteriosDeEvaluacion();
+	public List<NotaPorEvaluacion> obtenerNotasPorEvaluacion(Alumno alum,Materia asignatura) {
+		Map<Class<? extends ItemEvaluable>, Integer> criterios = asignatura.getCriteriosDeEvaluacion();
 		Assert.isTrue(criterios.size() > 0);
 		List<NotaPorEvaluacion> notas = Lists.newArrayList();
 		List<List<Integer>> contadores = new ArrayList<List<Integer>>();
@@ -258,7 +266,7 @@ public class AlumnoService {
 		NotaPorEvaluacion nota1 = notasDelAlumnoEnAsignatura.get(0);
 		nota1.setNotaFinal(nota);
 		nota1.setAlumno(alum);
-		nota1.setAsignatura(asignatura);
+		nota1.setMateria(asignatura);
 		notaPorEvaluacionService.save(nota1);
 
 		this.save(alum);
@@ -268,7 +276,7 @@ public class AlumnoService {
 		NotaPorEvaluacion nota2 = notasDelAlumnoEnAsignatura.get(1);
 		nota2.setNotaFinal(nota);
 		nota2.setAlumno(alum);
-		nota2.setAsignatura(asignatura);
+		nota2.setMateria(asignatura);
 		notaPorEvaluacionService.save(nota2);
 
 		this.save(alum);
@@ -277,7 +285,7 @@ public class AlumnoService {
 		NotaPorEvaluacion nota3 = notasDelAlumnoEnAsignatura.get(2);
 		nota3.setNotaFinal(nota);
 		nota3.setAlumno(alum);
-		nota3.setAsignatura(asignatura);
+		nota3.setMateria(asignatura);
 		notaPorEvaluacionService.save(nota3);
 
 		this.save(alum);
@@ -292,7 +300,8 @@ public class AlumnoService {
 	 * @param contadores
 	 * @param medias
 	 */
-	private void calcularMediasDeNotas(Alumno alum, Asignatura asignatura,
+	private void calcularMediasDeNotas(Alumno alum, Materia
+			asignatura,
 			List<List<Integer>> contadores, List<List<Double>> medias) {
 		for (ItemEvaluable item : obtenerItemsAlumnoAsignatura(alum, asignatura)) {
 			calcularMediaItemsEvaluacion(medias, contadores, item, 0);
@@ -377,7 +386,7 @@ public class AlumnoService {
 	 * @return
 	 */
 	public Collection<ItemEvaluable> obtenerItemsAlumnoAsignatura(Alumno alum,
-			Asignatura asignatura) {
+			Materia asignatura) {
 		Assert.notNull(asignatura);
 		Assert.notNull(alum);
 		return alumnoRepositorio.getAllItemsEvaluablesByAsignatura(
@@ -395,7 +404,7 @@ public class AlumnoService {
 	 * @return
 	 */
 	private double calcularNotaEvaluacion(List<Double> medias,
-			List<Integer> contadores, Map<String, Integer> criterios) {
+			List<Integer> contadores, Map<Class<? extends ItemEvaluable>, Integer> criterios) {
 		double mediaExamen, mediaTrabajo, mediaActividad;
 		if (contadores.get(4) == 0) {
 			mediaExamen = 0.0;
@@ -414,17 +423,17 @@ public class AlumnoService {
 		}
 		double notaTotal = 0.0;
 
-		Set<Entry<String, Integer>> conjuntoPares = criterios.entrySet();
-		for (Entry<String, Integer> entry : conjuntoPares) {
-			if (entry.getKey().equals("Examen")) {
+		Set<Entry<Class<? extends ItemEvaluable>, Integer>> conjuntoPares = criterios.entrySet();
+		for (Entry<Class<? extends ItemEvaluable>, Integer> entry : conjuntoPares) {
+			if (entry.getKey().equals(Examen.class)) {
 				notaTotal += mediaExamen * entry.getValue() / 100;
 			}
 
-			if (entry.getKey().equals("Trabajo")) {
+			if (entry.getKey().equals(Trabajo.class)) {
 				notaTotal += mediaTrabajo * entry.getValue() / 100;
 			}
 
-			if (entry.getKey().equals("Actividad")) {
+			if (entry.getKey().equals(Actividad.class)) {
 				notaTotal += mediaActividad * entry.getValue() / 100;
 			}
 		}
@@ -452,7 +461,7 @@ public class AlumnoService {
 	 * @param calificacion
 	 */
 	public void establecerItemEvaluacion(Date fecha, Alumno alumn,
-			Asignatura asig, String tipoNota, int calificacion) {
+			Materia asig, String tipoNota, int calificacion) {
 		com.app.applicationservices.services.Service servicio = (com.app.applicationservices.services.Service) appContext
 				.getBean(tipoNota + "Service");
 
@@ -464,7 +473,7 @@ public class AlumnoService {
 		}
 
 		item.setFecha(fecha);
-		item.setAsignatura(asig);
+		item.setMateria(asig);
 		item.setCalificacion(calificacion);
 		item.setEvaluacion(evaluacionService.findByDate(fecha));
 		servicio.save(item);
@@ -476,11 +485,9 @@ public class AlumnoService {
 	 * @return
 	 */
 	public Collection<Profesor> getProfesores(Alumno alum) {
-		Set<Profesor> profesores = Sets.newHashSet();
-		for (Asignatura asign : alum.getCurso().getAsignaturas()) {
-			profesores.add(asign.getProfesor());
-		}
-		return profesores;
+		return alum.getCursos().stream().filter(curso->{
+			return curso.getCursoAcademico().equals(cursoAcademicoService.findActual());
+		}).map(curso->{ return curso.getProfesor(); }).collect(Collectors.toSet());
 	}
 
 	/**
@@ -488,24 +495,12 @@ public class AlumnoService {
 	 * @param alumnosImportados
 	 * @throws ParseException
 	 */
-	public void guardarAlumnosImportados(List<String[]> alumnosImportados)
+	public void guardarAlumnosImportados(List<String[]> alumnosImportados,Profesor p)
 			throws ParseException {
 		for (String[] alumnoParseado : alumnosImportados) {
-			Alumno a = this.create(alumnoParseado);
+			Alumno a = this.create(alumnoParseado,p);
 
-			for (Alumno temp : cursoService.getAlumnosEnCurso(a.getCurso()
-					.getId())) {
-				if (temp.getNombre().trim().compareTo(a.getNombre().trim()) == 0
-						&& temp.getApellidos().trim()
-								.compareTo(a.getApellidos().trim()) == 0
-						&& new Date(temp.getFechaNacimiento().getTime())
-								.equals(a.getFechaNacimiento())) {
-					throw new IllegalArgumentException("El alumno "
-							+ temp.getNombre() + temp.getApellidos()
-							+ " ya está registrado en el sistema");
-				}
-			}
-			alumnoRepositorio.save(a);
+			throw new NotImplementedException();
 		}
 	}
 
@@ -515,7 +510,7 @@ public class AlumnoService {
 	 * @return
 	 * @throws ParseException
 	 */
-	private Alumno create(String[] alumnoParseado) throws ParseException {
+	private Alumno create(String[] alumnoParseado,Profesor p) throws ParseException {
 		Alumno a = create();
 		a.setNombre(alumnoParseado[0].trim());
 		a.setApellidos(alumnoParseado[1].trim());
@@ -523,10 +518,10 @@ public class AlumnoService {
 		int nivel = Integer.valueOf(curso.split(" ")[0]);
 		String nivelE = curso.split(" ")[1];
 		char iden = curso.split(" ")[2].charAt(0);
-		Curso c = cursoService.find(nivel, nivelE, iden);
+		InstanciaCurso c = cursoService.find(nivel, nivelE, iden);
 		Assert.notNull(c);
-		Assert.isTrue(profesorService.getCursosImparteDocencia().contains(c));
-		a.setCurso(c);
+		Assert.isTrue(profesorService.getCursosImparteDocencia(p).contains(c));
+		a.getCursos().add(c);
 		SimpleDateFormat sp = new SimpleDateFormat("mm/dd/yyyy");
 		a.setFechaNacimiento(sp.parse(alumnoParseado[3]));
 		try {
@@ -551,14 +546,14 @@ public class AlumnoService {
 	 * @param tipoNota
 	 * @param calificacion
 	 */
-	public void crearItemEvaluacion(Date fecha, Alumno alumn, Asignatura asig,
+	public void crearItemEvaluacion(Date fecha, Alumno alumn, Materia asig,
 			String tipoNota, String titulo) {
 		com.app.applicationservices.services.Service servicio = (com.app.applicationservices.services.Service) appContext
 				.getBean(tipoNota + "Service");
 		ItemEvaluable item = servicio.create();
 		item.setTitulo(titulo);
 		item.setFecha(fecha);
-		item.setAsignatura(asig);
+		item.setMateria(asig);
 		item.setCalificacion(0);
 		item.setEvaluacion(evaluacionService.findByDate(fecha));
 		servicio.save(item);

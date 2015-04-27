@@ -109,9 +109,9 @@ public class TrabajoService implements
 	 */
 	public void save(Trabajo falta) {
 		Assert.notNull(falta);
-		Assert.notNull(falta.getAsignatura());
-		Assert.notNull(falta.getAsignatura().getProfesor());
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.notNull(falta.getMateria());
+		Assert.notNull(falta.getMateria().getProfesor());
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada());
 		trabajoRepositorio.save(falta);
 	}
@@ -124,9 +124,9 @@ public class TrabajoService implements
 	 */
 	public void delete(Trabajo falta) {
 		Assert.notNull(falta);
-		Assert.notNull(falta.getAsignatura());
-		Assert.notNull(falta.getAsignatura().getProfesor());
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.notNull(falta.getMateria());
+		Assert.notNull(falta.getMateria().getProfesor());
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada());
 		trabajoRepositorio.delete(falta);
 	}

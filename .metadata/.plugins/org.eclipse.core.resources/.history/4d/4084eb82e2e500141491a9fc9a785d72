@@ -1,0 +1,16 @@
+/**
+* ProfesorPresenter.java
+* guardians-dashboard
+* 18/4/2015 17:49:21
+* Copyright David
+* com.app.ui.user.profesor.view
+*/
+package com.app.ui.user.profesor.view;
+
+/**
+ * @author David
+ *
+ */
+public class ProfesorPresenter {
+
+}

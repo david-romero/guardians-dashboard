@@ -116,7 +116,7 @@ public class RetrasoService implements
 				falta.getFecha().after(
 						new Date(System.currentTimeMillis() - 18000000)),
 				"pasarLista.error");
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada(), "pasarLista.error");
 		retrasoRepositorio.save(retraso);
 	}
@@ -128,7 +128,7 @@ public class RetrasoService implements
 	 * @param profesor
 	 */
 	public void delete(Retraso falta) {
-		Assert.isTrue(falta.getAsignatura().getProfesor()
+		Assert.isTrue(falta.getMateria().getProfesor()
 				.isIdentidadConfirmada());
 		Assert.notNull(falta);
 		retrasoRepositorio.delete(falta);

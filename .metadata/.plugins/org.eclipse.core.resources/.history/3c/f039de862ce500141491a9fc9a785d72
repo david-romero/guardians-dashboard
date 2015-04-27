@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="demo">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>com.app.domain.model.DomainEntity</class>
+		<class>com.app.domain.model.types.Administrador</class>
+		<class>com.app.domain.model.types.Alumno</class>
+		<class>com.app.domain.model.types.Asignatura</class>
+		<class>com.app.domain.model.types.Cita</class>
+		<class>com.app.domain.model.types.Curso</class>
+		<class>com.app.domain.model.types.CursoAcademico</class>
+		<class>com.app.domain.model.types.Evaluacion</class>
+		<class>com.app.domain.model.types.Evento</class>
+		<class>com.app.domain.model.types.ItemEvaluable</class>
+		<class>com.app.domain.model.types.NotaPorEvaluacion</class>
+		<class>com.app.domain.model.types.Notificacion</class>
+		<class>com.app.domain.model.types.PadreMadreOTutor</class>
+		<class>com.app.domain.model.types.Persona</class>
+		<class>com.app.domain.model.types.Profesor</class>
+		<class>com.app.domain.model.types.itemsevaluables.Actitud</class>
+		<class>com.app.domain.model.types.itemsevaluables.Actividad</class>
+		<class>com.app.domain.model.types.itemsevaluables.Cuaderno</class>
+		<class>com.app.domain.model.types.itemsevaluables.Ejercicios</class>
+		<class>com.app.domain.model.types.itemsevaluables.Examen</class>
+		<class>com.app.domain.model.types.itemsevaluables.FaltaDeAsistencia</class>
+		<class>com.app.domain.model.types.itemsevaluables.Retraso</class>
+		<class>com.app.domain.model.types.itemsevaluables.Trabajo</class>
+		<class>com.app.infrastructure.security.Authority</class>
+		<class>com.app.infrastructure.security.RememberMeToken</class>
+		<class>com.app.infrastructure.security.UserAccount</class>
+		
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3308/testspring" />
+			<property name="javax.persistence.jdbc.user" value="rootApp" />
+			<property name="javax.persistence.jdbc.password" value="root123" />
+
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.cglib.use_reflection_optimizer" value="true" />
+		</properties>
+		
+	</persistence-unit>
+</persistence>

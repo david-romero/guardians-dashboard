@@ -1,0 +1,30 @@
+/**
+* Matricula.java
+* guardians-dashboard
+* 16/4/2015 18:39:54
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+
+import com.app.domain.model.DomainEntity;
+
+@Entity
+@Access(AccessType.PROPERTY)
+/**
+ * @author David
+ *
+ */
+public class Matricula extends DomainEntity{
+
+	private Instituto instituto;
+	
+	private InstanciaCurso curso;
+	
+	private Alumno alumno;
+	
+}

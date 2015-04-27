@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 import com.app.domain.model.types.Alumno;
 import com.app.domain.model.types.Asignatura;
 import com.app.domain.model.types.Evaluacion;
+import com.app.domain.model.types.Materia;
 import com.app.domain.model.types.NotaPorEvaluacion;
 import com.app.domain.repositories.NotaPorEvaluacionRepository;
 import com.google.common.collect.Lists;
@@ -71,7 +72,7 @@ public class NotaPorEvaluacionService {
 	public void save(NotaPorEvaluacion nota) {
 		Assert.notNull(nota);
 		Assert.notNull(nota.getAlumno());
-		Assert.notNull(nota.getAsignatura());
+		Assert.notNull(nota.getMateria());
 		Assert.notNull(nota.getEvaluacion());
 		Assert.isTrue(nota.getNotaFinal() >= 0.0);
 		notaPorEvaluacionRepositorio.save(nota);
@@ -86,7 +87,7 @@ public class NotaPorEvaluacionService {
 	// Other business methods
 
 	public NotaPorEvaluacion findByAlumnoAndEvaluacion(Alumno alum, int ev,
-			Asignatura a) {
+			Materia a) {
 		Assert.notNull(a);
 		Assert.notNull(alum);
 		return notaPorEvaluacionRepositorio.findByAlumnoAndEvaluacion(
@@ -100,7 +101,7 @@ public class NotaPorEvaluacionService {
 	 * @return
 	 */
 	public List<NotaPorEvaluacion> getNotasPorEvaluacion(Alumno alum,
-			Asignatura a) {
+			Materia a) {
 		List<NotaPorEvaluacion> notas = Lists.newArrayList();
 		for (int i = 1; i <= 3; i++) {
 			NotaPorEvaluacion nota1 = findByAlumnoAndEvaluacion(alum, i, a);
@@ -117,13 +118,13 @@ public class NotaPorEvaluacionService {
 	 * @param alum
 	 * @param a
 	 */
-	public void createNotasPorEvaluacion(Alumno alum, Asignatura a) {
+	public void createNotasPorEvaluacion(Alumno alum, Materia a) {
 		for (int i = 1; i <= 3; i++) {
 			NotaPorEvaluacion nota = create();
 			nota.setAlumno(alum);
 			Evaluacion evaluacion = evaluacionService.findByIndicador(i);
 			nota.setEvaluacion(evaluacion);
-			nota.setAsignatura(a);
+			nota.setMateria(a);
 			nota.setNotaFinal(0.0);
 			nota.setAlumno(alum);
 			save(nota);

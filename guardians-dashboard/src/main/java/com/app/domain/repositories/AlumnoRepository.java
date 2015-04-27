@@ -26,11 +26,11 @@ import com.app.domain.model.types.Profesor;
  */
 public interface AlumnoRepository extends JpaRepository<Alumno, Integer> {
 
-	@Query("select a.profesor from Asignatura a join a.curso c join"
+	@Query("select a.profesor from Materia a join a.curso c join"
 			+ " c.alumnos alum where alum.id=?1")
 	public Collection<Profesor> getProfesores(Integer id);
 
-	@Query("select c.asignaturas from Curso c join c.alumnos alum "
+	@Query("select c.curso.asignaturas from InstanciaCurso c join c.alumnos alum "
 			+ "where alum.id=?1")
 	public Collection<Asignatura> getAsignaturas(Integer id);
 
@@ -39,7 +39,7 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Integer> {
 	public Collection<ItemEvaluable> getAllItemsEvaluables(Integer id);
 
 	@Query("select item from Alumno a join a.itemsEvaluables item "
-			+ " where a.id=?1 and item.asignatura.id=?2")
+			+ " where a.id=?1 and item.materia.id=?2")
 	public Collection<ItemEvaluable> getAllItemsEvaluablesByAsignatura(
 			Integer id, Integer asignaturaId);
 
@@ -49,7 +49,7 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Integer> {
 	public Collection<ItemEvaluable> getAllItemsEvaluablesPorEvaluacion(
 			Integer id, Integer evaluacion);
 
-	@Query("select a from Alumno a where a.curso.id = ?1 and a.fechaNacimiento = ?2")
+	@Query("select a from Alumno a join a.cursos curso where curso.id = ?1 and a.fechaNacimiento = ?2")
 	/**
 	 * @author David Romero Alcaide
 	 * @param id

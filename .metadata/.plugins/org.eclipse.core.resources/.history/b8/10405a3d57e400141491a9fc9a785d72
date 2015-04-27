@@ -1,0 +1,16 @@
+/**
+* Matricula.java
+* guardians-dashboard
+* 16/4/2015 18:39:54
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+/**
+ * @author David
+ *
+ */
+public class Matricula {
+
+}

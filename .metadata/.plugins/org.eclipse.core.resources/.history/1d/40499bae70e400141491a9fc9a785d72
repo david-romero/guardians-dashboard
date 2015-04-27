@@ -1,0 +1,90 @@
+/**
+* InstanciaCurso.java
+* guardians-dashboard
+* 16/4/2015 20:27:12
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+import java.util.Collection;
+import java.util.Map;
+
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.util.Assert;
+
+import com.app.domain.model.DomainEntity;
+
+/**
+ * @author David
+ *
+ */
+public class InstanciaCurso extends DomainEntity{
+
+	private Curso curso;
+	
+	private CursoAcademico cursoAcademico;
+	
+	/**
+	 * alumnos adscritos en este curso
+	 */
+	private Collection<Alumno> alumnos;
+	
+	@NotNull
+	@OneToMany(mappedBy = "curso")
+	/**
+	 * @return the alumnos
+	 */
+	public Collection<Alumno> getAlumnos() {
+		return alumnos;
+	}
+
+	/**
+	 * @param alumnos
+	 *            the alumnos to set
+	 */
+	public void setAlumnos(Collection<Alumno> alumnos) {
+		this.alumnos = alumnos;
+	}
+
+	
+	@NotNull
+	@Valid
+	@ManyToOne()
+	/**
+	 * @return cursoAcademico
+	 */
+	public CursoAcademico getCursoAcademico() {
+		return cursoAcademico;
+	}
+
+	/**
+	 * @param cursoAcademico
+	 *            the cursoAcademico to set Establecer el cursoAcademico
+	 */
+	public void setCursoAcademico(CursoAcademico cursoAcademico) {
+		this.cursoAcademico = cursoAcademico;
+	}
+
+	/**
+	 * @return curso
+	 */
+	public Curso getCurso() {
+		return curso;
+	}
+
+	/**
+	 * @param curso the curso to set
+	 * Establecer el curso
+	 */
+	public void setCurso(Curso curso) {
+		this.curso = curso;
+	}
+	
+	
+	
+}

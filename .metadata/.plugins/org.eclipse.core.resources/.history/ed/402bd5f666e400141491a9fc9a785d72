@@ -1,0 +1,18 @@
+/**
+* InstanciaCurso.java
+* guardians-dashboard
+* 16/4/2015 20:27:12
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+import com.app.domain.model.DomainEntity;
+
+/**
+ * @author David
+ *
+ */
+public class InstanciaCurso extends DomainEntity{
+
+}

@@ -1,0 +1,31 @@
+/**
+* Instituto.java
+* guardians-dashboard
+* 16/4/2015 18:16:38
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+/**
+ * @author David
+ *
+ */
+public class Instituto extends Persona{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5745625485915546117L;
+
+	private String calle;
+	
+	private String complementoDireccion;
+	
+	private String ciudad;
+	
+	private int cp;
+	
+	private String provincia;
+	
+}

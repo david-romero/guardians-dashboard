@@ -10,6 +10,7 @@ package com.app.applicationservices.services;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,13 @@ import org.springframework.util.Assert;
 
 import com.app.domain.domainservices.Valida;
 import com.app.domain.model.types.Alumno;
-import com.app.domain.model.types.Asignatura;
-import com.app.domain.model.types.Curso;
+import com.app.domain.model.types.InstanciaCurso;
 import com.app.domain.model.types.ItemEvaluable;
+import com.app.domain.model.types.Materia;
 import com.app.domain.model.types.PadreMadreOTutor;
 import com.app.domain.model.types.Profesor;
 import com.app.domain.model.types.itemsevaluables.Actividad;
-import com.app.domain.model.types.itemsevaluables.EjerciciosEntregados;
+import com.app.domain.model.types.itemsevaluables.Ejercicios;
 import com.app.domain.model.types.itemsevaluables.Examen;
 import com.app.domain.model.types.itemsevaluables.FaltaDeAsistencia;
 import com.app.domain.model.types.itemsevaluables.Trabajo;
@@ -42,7 +43,7 @@ import com.google.common.collect.Lists;
  * @author David Romero Alcaide
  *
  */
-public class ProfesorService implements Serializable{
+public class ProfesorService implements Serializable {
 
 	// Repositorios gestionados
 
@@ -63,13 +64,16 @@ public class ProfesorService implements Serializable{
 	private ExamenService examenService;
 
 	@Autowired
+	private CursoAcademicoService cursoAcademicoService;
+
+	@Autowired
 	private TrabajoService trabajoService;
 
 	@Autowired
 	private ActividadService actividadService;
 
 	@Autowired
-	private EjerciciosEntregadosService ejerciciosEntregadosService;
+	private EjerciciosService ejerciciosService;
 
 	/**
 	 * Constructor
@@ -142,7 +146,7 @@ public class ProfesorService implements Serializable{
 	 */
 	public void delete(Profesor profesor) {
 		Assert.notNull(profesor);
-		Assert.isTrue(profesor.getId()> 0);
+		Assert.isTrue(profesor.getId() > 0);
 		profesorRepositorio.delete(profesor);
 	}
 
@@ -155,29 +159,11 @@ public class ProfesorService implements Serializable{
 	 * @param profesor
 	 * @return
 	 */
-	public Collection<Curso> getCursosImparteDocencia() {
-		Profesor profesor = findPrincipal();
+	public Collection<InstanciaCurso> getCursosImparteDocencia(Profesor profesor) {
 		Assert.notNull(profesor);
 		Assert.isTrue(profesor.getId() > 0);
 		Assert.isTrue(profesor.isIdentidadConfirmada());
-		Collection<Curso> cursos;
-		cursos = profesorRepositorio.getCursosDondeImparteClase(profesor
-				.getId());
-		return cursos;
-	}
-	
-	/**
-	 * Obtener los cursos en los que imparte docencia un profesor
-	 * 
-	 * @author David Romero Alcaide
-	 * @param profesor
-	 * @return
-	 */
-	public Collection<Curso> getCursosImparteDocencia(Profesor profesor) {
-		Assert.notNull(profesor);
-		Assert.isTrue(profesor.getId() > 0);
-		Assert.isTrue(profesor.isIdentidadConfirmada());
-		Collection<Curso> cursos;
+		Collection<InstanciaCurso> cursos;
 		cursos = profesorRepositorio.getCursosDondeImparteClase(profesor
 				.getId());
 		return cursos;
@@ -191,29 +177,23 @@ public class ProfesorService implements Serializable{
 	 * @param p
 	 * @return
 	 */
-	public Asignatura getAsignaturaCursoProfesor(Curso c) {
-		Assert.notNull(c);
-		Profesor profesor = this.findPrincipal();
-		Assert.notNull(profesor, "pasarLista.profesor");
-		Assert.isTrue(profesor.isIdentidadConfirmada());
-		return profesorRepositorio.getAsignaturaCursoProfesor(c.getId(),
-				profesor.getId());
-	}
-	
-	/**
-	 * Obtiene la asignatura vinculada a un curso y a un profesor
-	 * 
-	 * @author David Romero Alcaide
-	 * @param c
-	 * @param p
-	 * @return
-	 */
-	public Asignatura getAsignaturaCursoProfesor(Curso c,Profesor profesor) {
+	public Materia getAsignaturaCursoProfesor(InstanciaCurso c,
+			Profesor profesor) {
 		Assert.notNull(c);
 		Assert.notNull(profesor, "pasarLista.profesor");
 		Assert.isTrue(profesor.isIdentidadConfirmada());
-		return profesorRepositorio.getAsignaturaCursoProfesor(c.getId(),
-				profesor.getId());
+		List<Materia> materias = profesor
+				.getMaterias()
+				.stream()
+				.filter(materia -> {
+					return materia.getCursoAcademico().equals(
+							c.getCursoAcademico());
+				}).collect(Collectors.toList());
+		if (materias.size() > 0) {
+			return materias.get(0);
+		} else {
+			return new Materia();
+		}
 	}
 
 	/**
@@ -239,6 +219,10 @@ public class ProfesorService implements Serializable{
 
 		result = profesorRepositorio.findByUserAccountId(userAccount.getId());
 
+		Assert.notNull(result.getUserAccount());
+
+		Assert.notEmpty(result.getUserAccount().getAuthorities());
+
 		return result;
 	}
 
@@ -246,25 +230,17 @@ public class ProfesorService implements Serializable{
 	 * @author David Romero Alcaide
 	 * @return
 	 */
-	public Collection<Alumno> getTodosLosAlumnosProfesor() {
-		List<Alumno> lista = Lists.newArrayList();
-		Profesor p = findPrincipal();
-		for (Asignatura a : p.getAsignaturas()) {
-			lista.addAll(a.getCurso().getAlumnos());
-		}
-		return lista;
-	}
-
-	/**
-	 * @author David Romero Alcaide
-	 * @return
-	 */
 	public Collection<Alumno> getTodosLosAlumnosProfesor(Profesor profe) {
-		List<Alumno> lista = Lists.newArrayList();
-		for (Asignatura a : profe.getAsignaturas()) {
-			lista.addAll(a.getCurso().getAlumnos());
-		}
-		return lista;
+		List<Collection<Alumno>> alumnos = profe
+				.getMaterias()
+				.stream()
+				.filter(materia -> {
+					return materia.getCursoAcademico().equals(
+							cursoAcademicoService.findActual());
+				}).map(materia -> {
+					return materia.getCurso().getAlumnos();
+				}).collect(Collectors.toList());
+		return Lists.newArrayList(Iterables.concat(alumnos));
 	}
 
 	/**
@@ -274,23 +250,22 @@ public class ProfesorService implements Serializable{
 	public void guardarCalificacion(int idItem, double calificacion,
 			String className) {
 
-		if (className.equals("Examen")) {
+		if (className.equals(Examen.class.getSimpleName())) {
 			Examen exam = examenService.findOne(idItem);
 			exam.setCalificacion(calificacion);
 			examenService.save(exam);
-		} else if (className.equals("Trabajo")) {
+		} else if (className.equals(Trabajo.class.getSimpleName())) {
 			Trabajo trabajo = trabajoService.findOne(idItem);
 			trabajo.setCalificacion(calificacion);
 			trabajoService.save(trabajo);
-		} else if (className.equals("Actividad")) {
+		} else if (className.equals(Actividad.class.getSimpleName())) {
 			Actividad acti = actividadService.findOne(idItem);
 			acti.setCalificacion(calificacion);
 			actividadService.save(acti);
-		} else if (className.equals("EjerciciosEntregados")) {
-			EjerciciosEntregados ejer = (EjerciciosEntregados) ejerciciosEntregadosService
-					.findOne(idItem);
+		} else if (className.equals(Ejercicios.class.getSimpleName())) {
+			Ejercicios ejer = (Ejercicios) ejerciciosService.findOne(idItem);
 			ejer.setCalificacion(calificacion);
-			ejerciciosEntregadosService.save(ejer);
+			ejerciciosService.save(ejer);
 		}
 	}
 
@@ -298,16 +273,10 @@ public class ProfesorService implements Serializable{
 	 * @author David Romero Alcaide
 	 * @return
 	 */
-	public List<Alumno> getTodosLosAlumnosProfesorConTutor() {
-		List<Alumno> alumnosTotales = (List<Alumno>) getTodosLosAlumnosProfesor();
-		Iterable<Alumno> filtrado = Iterables.filter(alumnosTotales,
-				new Predicate<Alumno>() {
-					
-					public boolean apply(Alumno p) {
-						return p.getPadresMadresOTutores().size() > 0;
-					}
-				});
-		return Lists.newArrayList(filtrado);
+	public List<Alumno> getTodosLosAlumnosProfesorConTutor(Profesor profe) {
+		return getTodosLosAlumnosProfesor(profe).stream().filter(alumno -> {
+			return alumno.getPadresMadresOTutores().size() > 0;
+		}).collect(Collectors.toList());
 	}
 
 	/**
@@ -315,16 +284,11 @@ public class ProfesorService implements Serializable{
 	 * @param c
 	 * @return
 	 */
-	public List<Alumno> getTodosLosAlumnosProfesorConTutorEnCurso(final Curso c) {
-		List<Alumno> alumnosConTutor = getTodosLosAlumnosProfesorConTutor();
-		Iterable<Alumno> filtrado = Iterables.filter(alumnosConTutor,
-				new Predicate<Alumno>() {
-					
-					public boolean apply(Alumno p) {
-						return p.getCurso().equals(c);
-					}
-				});
-		return Lists.newArrayList(filtrado);
+	public List<Alumno> getTodosLosAlumnosProfesorConTutorEnCurso(
+			InstanciaCurso c) {
+		return c.getAlumnos().stream().filter(alumno -> {
+			return alumno.getPadresMadresOTutores().size() > 0;
+		}).collect(Collectors.toList());
 	}
 
 	/**
@@ -332,16 +296,11 @@ public class ProfesorService implements Serializable{
 	 * @return
 	 */
 	public List<Alumno> getTodosLosAlumnosProfesorConTutor(Profesor profe,
-			final PadreMadreOTutor tutor) {
-		List<Alumno> alumnosTotales = (List<Alumno>) getTodosLosAlumnosProfesor(profe);
-		Iterable<Alumno> filtrado = Iterables.filter(alumnosTotales,
-				new Predicate<Alumno>() {
-					
-					public boolean apply(Alumno p) {
-						return p.getPadresMadresOTutores().contains(tutor);
-					}
-				});
-		return Lists.newArrayList(filtrado);
+			PadreMadreOTutor tutor) {
+		return getTodosLosAlumnosProfesorConTutor(profe).stream()
+				.filter(alumno -> {
+					return alumno.getPadresMadresOTutores().contains(tutor);
+				}).collect(Collectors.toList());
 	}
 
 	/**
@@ -361,95 +320,28 @@ public class ProfesorService implements Serializable{
 	 * @author David Romero Alcaide
 	 * @return
 	 */
-	public Collection<ItemEvaluable> findAllItems() {
-		Profesor p = findPrincipal();
-		Assert.notNull(p);
-		Assert.isTrue(p.isIdentidadConfirmada());
-		List<ItemEvaluable> items = Lists.newArrayList();
-		for (Asignatura a : p.getAsignaturas()) {
-			items.addAll(a.getItemsEvaluables());
-		}
-		return items;
-	}
-	
-	
-	
-	/**
-	 * @author David Romero Alcaide
-	 * @return
-	 */
 	public Collection<ItemEvaluable> findAllItems(Profesor p) {
 		Assert.notNull(p);
 		Assert.isTrue(p.isIdentidadConfirmada());
-		List<ItemEvaluable> items = Lists.newArrayList();
-		for (Asignatura a : p.getAsignaturas()) {
-			items.addAll(a.getItemsEvaluables());
-		}
-		return items;
+		Iterable<ItemEvaluable> items = Iterables
+				.concat(getTodosLosAlumnosProfesor(p).stream().map(alumno -> {
+					return alumno.getItemsEvaluables();
+				}).collect(Collectors.toList()));
+		return Lists.newArrayList(items);
 	}
 
 	/**
 	 * @author David Romero Alcaide
 	 * @return
 	 */
-	public Collection<FaltaDeAsistencia> findAllFaltaSinJustificar() {
-		Collection<ItemEvaluable> items = findAllItems();
-		List<FaltaDeAsistencia> faltasList = Lists.newArrayList();
-		for (ItemEvaluable item : items) {
-			if (item instanceof FaltaDeAsistencia) {
-				FaltaDeAsistencia falta = (FaltaDeAsistencia) item;
-				if (!falta.isJustificada()) {
-					faltasList.add(falta);
-				}
-			}
-		}
-		return faltasList;
-	}
+	public Collection<ItemEvaluable> findAllFaltaSinJustificar(Materia materia) {
 
-	/**
-	 * @author David Romero Alcaide
-	 * @return
-	 */
-	public Collection<FaltaDeAsistencia> findAllFaltaSinJustificar(
-			Asignatura asign) {
-		Collection<ItemEvaluable> items = findAllItems(asign.getProfesor());
-		List<FaltaDeAsistencia> faltasList = Lists.newArrayList();
-		for (ItemEvaluable item : items) {
-			if (item instanceof FaltaDeAsistencia
-					&& item.getAsignatura().equals(asign)) {
-				FaltaDeAsistencia falta = (FaltaDeAsistencia) item;
-				if (!falta.isJustificada()) {
-					faltasList.add(falta);
-				}
-			}
-		}
-		return faltasList;
-	}
-
-	/**
-	 * @author David Romero Alcaide
-	 * @param a
-	 * @return
-	 */
-	public Collection<FaltaDeAsistencia> findAllFaltaSinJustificarMiAsignaturas(
-			final Alumno a,Profesor p) {
-		Assert.notNull(a);
-		Assert.isTrue(p.isIdentidadConfirmada());
-		Asignatura asign = getAsignaturaCursoProfesor(a.getCurso(),p);
-		Collection<FaltaDeAsistencia> faltas = findAllFaltaSinJustificar(asign);
-		Iterable<FaltaDeAsistencia> faltasFiltradas = Iterables.filter(faltas,
-				new Predicate<FaltaDeAsistencia>() {
-
-					
-					public boolean apply(FaltaDeAsistencia input) {
-						boolean bandera = false;
-						if (!input.isJustificada()) {
-							bandera = input.getAlumno().equals(a);
-						}
-						return bandera;
-					}
-				});
-		return Lists.newArrayList(faltasFiltradas);
+		return findAllItems(materia.getProfesor())
+				.stream()
+				.filter(item -> {
+					return item instanceof FaltaDeAsistencia
+							&& !((FaltaDeAsistencia) item).isJustificada();
+				}).collect(Collectors.toList());
 	}
 
 	/**
@@ -470,40 +362,40 @@ public class ProfesorService implements Serializable{
 	 * @param profe
 	 * @return
 	 */
-	public Collection<ItemEvaluable> findAllItemsAlumnoProfesor(final Alumno alum,
-			Profesor profe) {
+	public Collection<ItemEvaluable> findAllItemsAlumnoProfesor(
+			final Alumno alum, Profesor profe) {
 		Assert.notNull(profe);
 		Assert.isTrue(profe.isIdentidadConfirmada());
 		Collection<ItemEvaluable> itemsProfesor = findAllItems(profe);
-		Iterable<ItemEvaluable> itemsProfesorAlumno = Iterables.filter(itemsProfesor,
-				new Predicate<ItemEvaluable>() {
+		Iterable<ItemEvaluable> itemsProfesorAlumno = Iterables.filter(
+				itemsProfesor, new Predicate<ItemEvaluable>() {
 
-					
 					public boolean apply(ItemEvaluable input) {
-						return checkItemEvaluablePerteneceAAlumno(input,alum);
+						return checkItemEvaluablePerteneceAAlumno(input, alum);
 					}
 
-					
 				});
-		List<ItemEvaluable> itemsProfesorAlumnoList = Lists.newArrayList(itemsProfesorAlumno);
+		List<ItemEvaluable> itemsProfesorAlumnoList = Lists
+				.newArrayList(itemsProfesorAlumno);
 		return itemsProfesorAlumnoList;
 	}
 
-	private boolean checkItemEvaluablePerteneceAAlumno(
-			ItemEvaluable item,Alumno alum) {
+	private boolean checkItemEvaluablePerteneceAAlumno(ItemEvaluable item,
+			Alumno alum) {
 		return item.getAlumno().equals(alum);
 	}
 
-	
-	public List<PadreMadreOTutor> getTutoresAlumnosPertenecientesProfesor(Profesor profesor){
+	public List<PadreMadreOTutor> getTutoresAlumnosPertenecientesProfesor(
+			Profesor profesor) {
 		List<PadreMadreOTutor> tutores = Lists.newArrayList();
 		List<Alumno> alumnosProfesor = (List<Alumno>) getTodosLosAlumnosProfesor(profesor);
-		for ( Alumno alumno : alumnosProfesor ){
-			if (alumno.getPadresMadresOTutores() != null && alumno.getPadresMadresOTutores().size() > 0){
+		for (Alumno alumno : alumnosProfesor) {
+			if (alumno.getPadresMadresOTutores() != null
+					&& alumno.getPadresMadresOTutores().size() > 0) {
 				tutores.addAll(alumno.getPadresMadresOTutores());
 			}
 		}
 		return tutores;
 	}
-	
+
 }

@@ -25,7 +25,7 @@ import com.app.domain.model.types.itemsevaluables.Cuaderno;
  *
  */
 public interface CuadernoRepository extends JpaRepository<Cuaderno, Integer> {
-	@Query("select e from Cuaderno e where e.fecha = ?1 and e.asignatura.id = ?2 "
+	@Query("select e from Cuaderno e where e.fecha = ?1 and e.materia.id = ?2 "
 			+ "and e.titulo = ?3")
 	/**
 	 * 

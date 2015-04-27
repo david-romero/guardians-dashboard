@@ -1,0 +1,22 @@
+/**
+* AsignaturaImpartida.java
+* guardians-dashboard
+* 16/4/2015 18:43:14
+* Copyright David
+* com.app.domain.model.types
+*/
+package com.app.domain.model.types;
+
+/**
+ * @author David
+ *
+ */
+public class AsignaturaImpartida {
+
+	private Asignatura asignatura;
+	
+	private Curso curso;
+	
+	
+	
+}
