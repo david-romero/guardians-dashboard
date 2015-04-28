@@ -30,7 +30,6 @@ import com.app.ui.AppUI;
 import com.vaadin.addon.jpacontainer.EntityProvider;
 import com.vaadin.addon.jpacontainer.JPAContainer;
 import com.vaadin.addon.jpacontainer.provider.CachingMutableLocalEntityProvider;
-import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.ViewScope;
@@ -217,6 +216,32 @@ public class AdminPresenter implements ClickListener{
 		} catch (TransactionException oops) {
 			throw oops;
 		}
+	}
+
+
+
+	/**
+	 * @author David
+	 * @return
+	 */
+	public Administrador create() {
+		Administrador admin = adminService.create();
+		admin.setNombre("");
+		admin.setApellidos("");
+		admin.setNotas("");
+		admin.setEmail("");
+		admin.setTelefono("");
+		return admin;
+	}
+
+
+
+	/**
+	 * @author David
+	 * @param admin
+	 */
+	public void save(Administrador admin) {
+		adminService.save(admin);
 	}
 
 }

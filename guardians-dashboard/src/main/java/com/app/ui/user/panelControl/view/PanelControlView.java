@@ -13,14 +13,17 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.app.domain.model.types.Administrador;
 import com.app.domain.model.types.Profesor;
 import com.app.presenter.event.EventComunication.CloseOpenWindowsEvent;
 import com.app.presenter.event.EventComunication.NotificationsCountUpdatedEvent;
 import com.app.presenter.event.EventComunicationBus;
+import com.app.ui.components.AdministradorCreateWindow;
 import com.app.ui.components.NotificacionCreateWindow;
 import com.app.ui.components.SparklineChart;
 import com.app.ui.components.TopGrossingMoviesChart;
 import com.app.ui.components.TopTenMoviesTable;
+import com.app.ui.user.admin.presenter.AdminPresenter;
 import com.app.ui.user.notificaciones.presenter.NotificacionesPresenter;
 import com.app.ui.user.notificaciones.view.NotificacionesView;
 import com.app.ui.user.panelControl.presenter.PanelControlPresenter;
@@ -65,16 +68,23 @@ public class PanelControlView extends Panel implements View {
 
 	@Autowired
 	private PanelControlPresenter presenter;
+	
+	@Autowired
+	private AdminPresenter presenterAdministrador;
 
 	@Autowired
 	private NotificacionesPresenter presenterNotificaciones;
 
 	@Autowired
 	private NotificacionCreateWindow window;
+	
+	@Autowired
+	private AdministradorCreateWindow windowAdmin;
 
 	private Label titleLabel;
 	private NotificationsButton notificationsButton;
 	private NotificationCreateButton notificationCreateButton;
+	private AdministradorCreateButton administradorCreateButton;
 	private CssLayout dashboardPanels;
 	private VerticalLayout root;
 	private Window notificationsWindow;
@@ -153,6 +163,10 @@ public class PanelControlView extends Panel implements View {
 		notificationCreateButton = buildNotificationCreateButton();
 		HorizontalLayout tools = new HorizontalLayout(notificationsButton,
 				notificationCreateButton);
+		if ( presenter.getCurrentPerson() instanceof Administrador ){
+			administradorCreateButton = buildAdministradorCreateButton();
+			tools.addComponent(administradorCreateButton);
+		}
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 		header.addComponent(tools);
@@ -173,6 +187,15 @@ public class PanelControlView extends Panel implements View {
 		result.addClickListener(e -> {
 			window.setPresenter(presenterNotificaciones);
 			getUI().addWindow(window);
+		});
+		return result;
+	}
+	
+	private AdministradorCreateButton buildAdministradorCreateButton() {
+		AdministradorCreateButton result = new AdministradorCreateButton();
+		result.addClickListener(e -> {
+			windowAdmin.setPresenter(presenterAdministrador);
+			getUI().addWindow(windowAdmin);
 		});
 		return result;
 	}
@@ -427,6 +450,24 @@ public class PanelControlView extends Panel implements View {
 
 		public NotificationCreateButton() {
 			setIcon(FontAwesome.SEND);
+			setId(ID);
+			addStyleName("notifications");
+			addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+			EventComunicationBus.register(this);
+		}
+
+	}
+	
+	public static final class AdministradorCreateButton extends Button {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2993136376885547514L;
+		public static final String ID = "dashboard-notifications";
+
+		public AdministradorCreateButton() {
+			setIcon(FontAwesome.PLUS);
+			setDescription("Añadir Administrador");
 			setId(ID);
 			addStyleName("notifications");
 			addStyleName(ValoTheme.BUTTON_ICON_ONLY);

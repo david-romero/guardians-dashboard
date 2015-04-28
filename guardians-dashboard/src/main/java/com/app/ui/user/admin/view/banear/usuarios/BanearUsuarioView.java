@@ -7,18 +7,24 @@
  */
 package com.app.ui.user.admin.view.banear.usuarios;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.app.domain.model.types.Alumno;
 import com.app.domain.model.types.Persona;
 import com.app.presenter.event.EventComunication.BrowserResizeEvent;
 import com.app.presenter.event.EventComunicationBus;
 import com.app.ui.user.admin.presenter.AdminPresenter;
 import com.google.gwt.thirdparty.guava.common.eventbus.Subscribe;
+import com.vaadin.addon.jpacontainer.JPAContainerItem;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
@@ -26,13 +32,19 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.StreamResource.StreamSource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -102,13 +114,20 @@ public class BanearUsuarioView extends VerticalLayout implements View {
 	}
 
 	private Button buildCreateReport() {
-		final Button createReport = new Button("Crear Informe");
+		final Button createReport = new Button("Banear Seleccionados");
 		createReport
-				.setDescription("Create a new report from the selected transactions");
+				.setDescription("Banea a los usuarios seleccionados de la aplicación.");
 		createReport.addClickListener(e -> {
-			// TODO
+				Object persona = table.getValue();
+				if ( persona != null && persona instanceof Persona ){
+					Persona p = (Persona) persona;
+					p.setUserAccount(null);
+					presenter.savePersona(p);
+					table.refreshRowCache();
+				}
+			
 			});
-		createReport.setEnabled(false);
+		createReport.setEnabled(true);
 		return createReport;
 	}
 
@@ -169,6 +188,7 @@ public class BanearUsuarioView extends VerticalLayout implements View {
 		// Have a container of some type to contain the data
 		BeanItemContainer<Persona> container = new BeanItemContainer<Persona>(
 				Persona.class, presenter.getTodasPersonas());
+		container.addNestedContainerProperty("userAccount.username");
 		Table table = new Table();
 		table.setSizeFull();
 		table.addStyleName(ValoTheme.TABLE_BORDERLESS);
@@ -182,9 +202,59 @@ public class BanearUsuarioView extends VerticalLayout implements View {
 		table.setContainerDataSource(container);
 
 		table.setImmediate(true);
+		
+		table.setVisibleColumns("DNI","apellidos","nombre","email","identidadConfirmada","imagen","telefono","userAccount.username");
+		
+		table.addGeneratedColumn("imagen", getImageColumnGenerator());
 
 		return table;
 	}
+	
+	public ColumnGenerator getImageColumnGenerator(){
+		 ColumnGenerator imageColumnGenerator = new ColumnGenerator()
+		  {
+		    /**
+			 * 
+			 */
+			private static final long serialVersionUID = 8387232622265687219L;
+
+			public Object generateCell(final Table source, final Object itemId,
+		        final Object columnId)
+		    {
+			  @SuppressWarnings("unchecked")
+			  BeanItem<Persona> alumnoBean = (BeanItem<Persona>) source.getItem(itemId);
+			  Persona alumno = alumnoBean.getBean();
+			  VerticalLayout pic = new VerticalLayout();
+				pic.setSizeUndefined();
+				pic.setSpacing(true);
+				Resource resource;
+				if (alumno.getImagen() != null
+						&& alumno.getImagen().length > 0) {
+					StreamSource source2 = new StreamResource.StreamSource() {
+
+						private static final long serialVersionUID = -3823582436185258502L;
+
+						public InputStream getStream() {
+							InputStream reportStream = null;
+							reportStream = new ByteArrayInputStream(
+									alumno.getImagen());
+							return reportStream;
+						}
+					};
+					resource = new StreamResource(source2, "profile-picture.png");
+				} else {
+					resource = new ThemeResource(
+							"img/profile-pic-300px.jpg");
+				}
+				Image profilePic = new Image("", resource);
+				profilePic.setWidth(40.0f, Unit.PIXELS);
+				profilePic.markAsDirty();
+				pic.addComponent(profilePic);
+		      return pic;
+		    }
+		  };
+		  return imageColumnGenerator;
+		}
 
 	@Subscribe
 	public void browserResized(final BrowserResizeEvent event) {
