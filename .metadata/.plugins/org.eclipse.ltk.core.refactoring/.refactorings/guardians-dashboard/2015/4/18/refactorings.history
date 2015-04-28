@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;NotificacionCreateWindow.java&apos; to &apos;guardians-dashboard/src/main/java/com.app.ui.components&apos;&#x0D;&#x0A;- Original project: &apos;guardians-dashboard&apos;&#x0D;&#x0A;- Destination element: &apos;guardians-dashboard/src/main/java/com.app.ui.components&apos;&#x0D;&#x0A;- Original element: &apos;com.app.ui.components.NotificacionCreateWindow.java&apos;" description="Copy compilation unit" destination="/src\/main\/java&lt;com.app.ui.components" element1="/src\/main\/java&lt;com.app.ui.components{NotificacionCreateWindow.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1430243787935" units="1" version="1.0"/>
+</session>
