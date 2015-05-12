@@ -1,5 +1,6 @@
 @import "../valo/valo";
 @import "common";
+@import "addons";
 @import "views/login";
 @import "views/appeducacionalview";
 @import "views/schedule";
@@ -27,6 +28,7 @@ $valo-menu-background-color: #414B56;
 
 @mixin appeducacionalvaadin {
   @include valo;
+  @include addons;
   @include appeducacionalvaadin-common;
   @include appeducacionalvaadin-login-view;
   @include appeducacionalvaadin-appeducacional-view;

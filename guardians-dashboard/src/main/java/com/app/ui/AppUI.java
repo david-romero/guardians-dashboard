@@ -34,6 +34,7 @@ import com.app.infrastructure.security.UserAccount;
 import com.app.presenter.event.EventComunicationBus;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.ExternalResource;
@@ -54,6 +55,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SpringUI
 @Theme("appeducacionalvaadin")
+@Widgetset("com.app.ui.AppWidgetSet")
 /**
  * @author David
  *

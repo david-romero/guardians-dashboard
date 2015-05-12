@@ -13,8 +13,11 @@ import java.util.List;
 import com.app.infrastructure.security.Authority;
 import com.app.ui.user.admin.view.banear.usuarios.BanearUsuarioView;
 import com.app.ui.user.admin.view.confirmar.identidad.ConfirmarIdentidadView;
+import com.app.ui.user.alumno.view.ListarView;
+import com.app.ui.user.alumno.view.PerfilView;
+import com.app.ui.user.calendario.view.CalendarioView;
+import com.app.ui.user.calificar.alumno.view.CalificarAlumnoView;
 import com.app.ui.user.panelControl.view.PanelControlView;
-import com.app.ui.user.calendario.view.*;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -30,7 +33,10 @@ public enum UserMenuHelper {
 	PANELCONTROL("PaneldeControl", PanelControlView.class, FontAwesome.HOME, true,Arrays.asList(new Authority(Authority.ADMINISTRADOR),new Authority(Authority.TUTOR),new Authority(Authority.PROFESOR))),
 	BANEAR("BanearUsuario", BanearUsuarioView.class, FontAwesome.BAN, true,Arrays.asList(new Authority(Authority.ADMINISTRADOR))),
 	CONFIRMARIDENTIDAD("Confirmar", ConfirmarIdentidadView.class, FontAwesome.CHECK_SQUARE, true,Arrays.asList(new Authority(Authority.ADMINISTRADOR))),
-	CALENDARIO("Calendario", CalendarioView.class, FontAwesome.CALENDAR, true,Arrays.asList(new Authority(Authority.PROFESOR),new Authority(Authority.TUTOR),new Authority(Authority.PROFESOR)));
+	CALENDARIO("Calendario", CalendarioView.class, FontAwesome.CALENDAR, true,Arrays.asList(new Authority(Authority.TUTOR),new Authority(Authority.PROFESOR))),
+	CALIFICARALUMNO("CalificarAlumno", CalificarAlumnoView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR))),
+	ALUMNO("Perfil", PerfilView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR))),
+	LISTAR("Listar", ListarView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR)));
 	
 
     private final String viewName;

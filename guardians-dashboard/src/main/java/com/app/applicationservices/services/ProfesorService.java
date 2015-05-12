@@ -12,9 +12,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
 import com.app.domain.domainservices.Valida;
@@ -74,6 +78,16 @@ public class ProfesorService implements Serializable {
 
 	@Autowired
 	private EjerciciosService ejerciciosService;
+	
+	@Autowired
+	/**
+	 * Manager
+	 */
+	private PlatformTransactionManager transactionManager;
+	/**
+	 * State of transaction
+	 */
+	protected TransactionStatus txStatus;
 
 	/**
 	 * Constructor
@@ -222,6 +236,12 @@ public class ProfesorService implements Serializable {
 		Assert.notNull(result.getUserAccount());
 
 		Assert.notEmpty(result.getUserAccount().getAuthorities());
+		
+		Assert.notEmpty(result.getCursos());
+		
+		result.getCursos().forEach(curso->{
+			Assert.notEmpty(curso.getAlumnos());
+		}); 
 
 		return result;
 	}
@@ -316,18 +336,32 @@ public class ProfesorService implements Serializable {
 		save(p);
 	}
 
+	@Transactional
 	/**
 	 * @author David Romero Alcaide
 	 * @return
 	 */
 	public Collection<ItemEvaluable> findAllItems(Profesor p) {
-		Assert.notNull(p);
-		Assert.isTrue(p.isIdentidadConfirmada());
-		Iterable<ItemEvaluable> items = Iterables
-				.concat(getTodosLosAlumnosProfesor(p).stream().map(alumno -> {
-					return alumno.getItemsEvaluables();
-				}).collect(Collectors.toList()));
-		return Lists.newArrayList(items);
+		try{
+			beginTransaction(true);
+			Assert.notNull(p);
+			Assert.isTrue(p.isIdentidadConfirmada());
+			Assert.notEmpty(p.getCursos());
+			Iterable<ItemEvaluable> items = Iterables
+					.concat(getTodosLosAlumnosProfesor(p).stream().map(alumno -> {
+						Assert.notNull(alumno);
+						Assert.notNull(alumno.getItemsEvaluables());
+						return alumno.getItemsEvaluables();
+					}).collect(Collectors.toList()));
+			Assert.notNull(items);
+			List<ItemEvaluable> itemsList = Lists.newArrayList(items);
+			commitTransaction();
+			return itemsList;
+		}catch(Exception e){
+			e.printStackTrace();
+			rollbackTransaction();
+			return Lists.newArrayList();
+		}
 	}
 
 	/**
@@ -396,6 +430,61 @@ public class ProfesorService implements Serializable {
 			}
 		}
 		return tutores;
+	}
+	
+	/**
+	 * Begin a transaction with the database
+	 * 
+	 * @author David Romero Alcaide
+	 * @param readOnly
+	 */
+	protected void beginTransaction(boolean readOnly) {
+		assert txStatus == null;
+
+		DefaultTransactionDefinition definition;
+
+		definition = new DefaultTransactionDefinition();
+		definition
+				.setIsolationLevel(DefaultTransactionDefinition.ISOLATION_DEFAULT);
+		definition
+				.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		definition.setReadOnly(readOnly);
+		txStatus = transactionManager.getTransaction(definition);
+	}
+	
+	/**
+	 * Commit a transaction
+	 * 
+	 * @author David Romero Alcaide
+	 * @throws Throwable
+	 */
+	protected void commitTransaction() throws TransactionException {
+		assert txStatus != null;
+
+		try {
+			transactionManager.commit(txStatus);
+			txStatus = null;
+		} catch (TransactionException oops) {
+			throw oops;
+		}
+	}
+
+	/**
+	 * Rollback a transaction
+	 * 
+	 * @author David Romero Alcaide
+	 * @throws Throwable
+	 */
+	protected void rollbackTransaction() throws TransactionException {
+		assert txStatus != null;
+		try {
+			if (!txStatus.isCompleted()) {
+				transactionManager.rollback(txStatus);
+			}
+			txStatus = null;
+		} catch (TransactionException oops) {
+			throw oops;
+		}
 	}
 
 }

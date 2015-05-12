@@ -115,6 +115,7 @@ public abstract class Persona extends DomainEntity implements Serializable,Compa
 	 *            the dNI to set
 	 */
 	public void setDNI(String dni) {
+		Assert.notNull(dni);
 		Assert.isTrue(Valida.validaDNI(dni));
 		this.dni = dni;
 	}

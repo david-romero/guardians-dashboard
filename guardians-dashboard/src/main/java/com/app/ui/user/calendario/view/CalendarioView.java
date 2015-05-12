@@ -80,12 +80,14 @@ public final class CalendarioView extends CssLayout implements View {
     private Component tray;
     @Autowired
     private CalendarioPresenter presenter;
+    @Autowired
+    private CitaLayout layout;
 	
 	private TabSheet tabs;
 	
 	private Cita citaAModificar;
     
-    public static final String NAME = "calendario";
+    public static final String NAME = "Calendario";
     
     private static final Logger log = Logger.getLogger(CalendarioView.class);
 
@@ -106,7 +108,6 @@ public final class CalendarioView extends CssLayout implements View {
         tabs.addComponent(buildCatalogView());
 	    Cita cita = presenter.create(Profesor.class);
 	    cita.setFecha(new Date());
-	    CitaLayout layout = new CitaLayout();
 	    layout.setCita(cita);
         tabs.addTab(layout, null, FontAwesome.PLUS);
 

@@ -150,7 +150,7 @@ public class CalendarioPresenter {
 		properties
 				.put("javax.persistence.jdbc.driver", "com.mysql.jdbc.Driver");
 		properties.put("javax.persistence.jdbc.url",
-				"jdbc:mysql://localhost:3306/appEducacional");
+				"jdbc:mysql://localhost:3306/testspring");
 		properties.put("javax.persistence.jdbc.user", "rootApp");
 		properties.put("javax.persistence.jdbc.password", "root123");
 

@@ -10,6 +10,7 @@ package com.app.ui.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.app.applicationservices.services.ProfesorService;
@@ -25,16 +26,20 @@ import com.vaadin.addon.charts.model.Credits;
 import com.vaadin.addon.charts.model.ListSeries;
 import com.vaadin.addon.charts.model.PlotOptionsBar;
 import com.vaadin.addon.charts.model.Series;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.UI;
 
+@ViewScope
+@SpringComponent
 /**
  * @author David
  *
  */
 public class TopGrossingMoviesChart extends Chart {
 
-	private transient ApplicationContext applicationContext;
 
+	@Autowired
 	private ProfesorService profesorService;
 
 	/**
@@ -43,7 +48,16 @@ public class TopGrossingMoviesChart extends Chart {
 	private static final long serialVersionUID = -1387352152513936704L;
 
 	public TopGrossingMoviesChart() {
-		loadBeans();
+		
+
+	}
+
+	/* (non-Javadoc)
+	 * @see com.vaadin.ui.AbstractComponent#attach()
+	 */
+	@Override
+	public void attach() {
+		super.attach();
 		setCaption("Top Grossing Movies");
 		getConfiguration().setTitle("");
 		getConfiguration().getChart().setType(ChartType.BAR);
@@ -52,19 +66,8 @@ public class TopGrossingMoviesChart extends Chart {
 		getConfiguration().getxAxis().setTickWidth(0);
 		getConfiguration().getyAxis().setTitle("");
 		setSizeFull();
-		UserAccount account = AppUI.getCurrentUser();
-    	Profesor profesor = null;
-    	switch ( Lists.newArrayList(account.getAuthorities()).get(0).getAuthority()) {
-		case Authority.PROFESOR:
-			profesor = profesorService.findByUserAccount(account);
-			break;
-		case Authority.TUTOR:
-			break;
-
-		default:
-			break;
-		}
-		List<ItemEvaluable> movies = new ArrayList<ItemEvaluable>(profesorService.findAllItems(profesor));
+		 UserAccount ua = AppUI.getCurrentUser();
+		List<ItemEvaluable> movies = new ArrayList<ItemEvaluable>(profesorService.findAllItems(profesorService.findByUserAccount(ua)));
 
 		List<Series> series = new ArrayList<Series>();
 		if (movies.size() >= 5){
@@ -93,15 +96,8 @@ public class TopGrossingMoviesChart extends Chart {
 		PlotOptionsBar opts = new PlotOptionsBar();
 		opts.setGroupPadding(0);
 		getConfiguration().setPlotOptions(opts);
-
 	}
 	
-	/**
-	 * @author David
-	 */
-	private void loadBeans() {
-		applicationContext = ( (AppUI) UI.getCurrent() ).getApplicationContext();
-		profesorService = applicationContext.getBean(ProfesorService.class);
-	}
+	
 
 }

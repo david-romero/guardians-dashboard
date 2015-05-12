@@ -57,4 +57,12 @@
     <inherits name="org.tepi.filtertable.gwt.FilterTableWidgetset" />
 
     <inherits name="org.vaadin.alump.lazylayouts.LazyLayoutsWidgetSet" />
+
+    <inherits name="com.vaadin.addon.spreadsheet.Widgetset" />
+
+    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+
+    <inherits name="org.vaadin.cssinject.Cssinject_addonWidgetset" />
+
+    <inherits name="org.vaadin.easyuploads.Widgetset" />
 </module>

@@ -12,6 +12,85 @@
 
 	<!-- User accounts -->
 	
+	<bean id="userAccount1" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="profesor10" />
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="PROFESOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="userAccount3" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="profesor2" />
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="PROFESOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="userAccount4" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="profesor3" />
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="PROFESOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="userAccount2" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="tutor1" />
+		<property name="password" value="91ec1f9324753048c0096d036a694f86" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="TUTOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="userAccount5" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="tutor2" />
+		<property name="password" value="91ec1f9324753048c0096d036a694f86" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="TUTOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="userAccount6" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="tutor3" />
+		<property name="password" value="91ec1f9324753048c0096d036a694f86" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="TUTOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="userAccount7" class="com.app.infrastructure.security.UserAccount">
+		<property name="username" value="tutor4" />
+		<property name="password" value="91ec1f9324753048c0096d036a694f86" />
+		<property name="authorities">
+			<list>
+				<bean class="com.app.infrastructure.security.Authority">
+					<property name="authority" value="TUTOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="userAccount8" class="com.app.infrastructure.security.UserAccount">
 		<property name="username" value="admin1" />
 		<property name="password" value="21232f297a57a5a743894a0e4a801fc3" />
@@ -57,6 +136,309 @@
 		<property name="DNI" value="77953335X"></property>
 		<property name="preferenciasCita" value="Martes a las 9:00; Jueves a las 15:00"></property>
 		<property name="notas" value=""></property>
+	</bean>
+	
+	<bean id="tutor1" class="com.app.domain.model.types.PadreMadreOTutor">
+		<property name="nombre" value="Paco" />
+		<property name="apellidos" value="Alba"></property>
+		<property name="userAccount" ref="userAccount2"></property>
+		<property name="DNI" value="28842171X"></property>
+		<property name="notas" value=""></property>
+		<property name="tutorandos">
+			<list>
+				<ref bean="alumno1"></ref>
+			</list>
+		</property>
+	</bean>
+	<bean id="instituto1" class="com.app.domain.model.types.Instituto">
+		<property name="calle" value="Plaza de Doña Elvira" />
+		<property name="ciudad" value="Aracena"></property>
+		<property name="cp" value="21200"></property>
+		<property name="numero" value="1"></property>
+		<property name="provincia" value="Huelva"></property>
+		<property name="nombre" value="Instituto Aracena" />
+		<property name="apellidos" value="Secundaria"></property>
+		<property name="notas" value="Esto es un instituto"></property>
+		<property name="complementoDireccion" value="No peatonal"></property>
+		<property name="userAccount" ref="userAccount1"></property>
+		<property name="DNI" value="12345678Z"></property>
+		<property name="matriculas">
+			<list>
+			</list>
+		</property>
+		<property name="relacionesLaborales">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="tutor2" class="com.app.domain.model.types.PadreMadreOTutor">
+		<property name="nombre" value="Terelu" />
+		<property name="apellidos" value="Campos"></property>
+		<property name="userAccount" ref="userAccount5"></property>
+		<property name="DNI" value="12345678Z"></property>
+		<property name="notas" value=""></property>
+		<property name="tutorandos">
+			<list>
+				<ref bean="alumno1"></ref>
+			</list>
+		</property>
+	</bean>
+	<bean id="tutor3" class="com.app.domain.model.types.PadreMadreOTutor">
+		<property name="nombre" value="Juan Carlos" />
+		<property name="apellidos" value="Aragon"></property>
+		<property name="userAccount" ref="userAccount6"></property>
+		<property name="DNI" value="48993752A"></property>
+		<property name="notas" value=""></property>
+		<property name="tutorandos">
+		
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="tutor4" class="com.app.domain.model.types.PadreMadreOTutor">
+		<property name="nombre" value="David" />
+		<property name="apellidos" value="Romero Alcaide"></property>
+		<property name="userAccount" ref="userAccount7"></property>
+		<property name="DNI" value="48950972A"></property>
+		<property name="notas" value=""></property>
+		<property name="tutorandos">
+			<list>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="cursoAcademico1" class="com.app.domain.model.types.CursoAcademico">
+		<property name="inicio">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2014-09-22" />
+			</bean>
+		</property>
+		<property name="fin">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2015-08-22" />
+			</bean>
+		</property>
+		<property name="denominacion" value="13/14"></property>
+	</bean>
+	<bean id="curso2" class="com.app.domain.model.types.Curso">
+		<property name="nivel" value="3"></property>
+		<property name="nivelEducativo" value="E.S.O."></property>
+		<property name="identificador" value="B"></property>
+		<property name="asignaturas">
+			<list>
+				<ref bean="asignatura5"></ref>
+			</list>
+		</property>
+		<property name="instituto" ref="instituto1"></property>
+	</bean>
+	<bean id="instanciaCurso2" class="com.app.domain.model.types.InstanciaCurso" >
+		<property name="alumnos">
+			<list>
+				<ref bean="alumno3"></ref>
+				<ref bean="alumno1"></ref>
+				<ref bean="alumno2"></ref>
+			</list>
+		</property>
+		<property name="profesor" ref="profesor1" />
+		<property name="curso" ref="curso2" />
+		<property name="cursoAcademico" ref="cursoAcademico1" />
+	</bean>
+	<bean id="alumno1" class="com.app.domain.model.types.Alumno">
+		<property name="nombre" value="Mari Angeles" />
+		<property name="apellidos" value="Mañas"></property>
+		<property name="fechaNacimiento">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="1990-6-22" />
+			</bean>
+		</property>
+		<property name="cursos">
+			<list>
+				<ref bean="instanciaCurso2"></ref>
+			</list>
+		</property>
+		<property name="padresMadresOTutores">
+			<list>
+				<ref bean="tutor1"></ref>
+			</list>
+		</property>
+		<property name="itemsEvaluables">
+			<list>
+			</list>
+		</property>
+		<property name="matriculas">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="alumno2" class="com.app.domain.model.types.Alumno">
+		<property name="nombre" value="Antonio" ></property>
+		<property name="apellidos" value="Mañas"></property>
+		<property name="cursos">
+			<list>
+				<ref bean="instanciaCurso2"></ref>
+			</list>
+		</property>
+		<property name="padresMadresOTutores">
+			<list>
+				<ref bean="tutor3"></ref>
+			</list>
+		</property>
+		<property name="fechaNacimiento">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="1990-6-22" />
+			</bean>
+		</property>
+		<property name="itemsEvaluables">
+			<list>
+			</list>
+		</property>
+		<property name="matriculas">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="alumno3" class="com.app.domain.model.types.Alumno">
+		<property name="nombre" value="Laura" />
+		<property name="apellidos" value="Mañas"></property>
+		<property name="cursos">
+			<list>
+				<ref bean="instanciaCurso2"></ref>
+			</list>
+		</property>
+		<property name="padresMadresOTutores">
+			<list>
+				<ref bean="tutor4"></ref>
+			</list>
+		</property>
+		<property name="fechaNacimiento">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="1990-6-22" />
+			</bean>
+		</property>
+		<property name="itemsEvaluables">
+			<list>
+			</list>
+		</property>
+		<property name="matriculas">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="asignatura5" class="com.app.domain.model.types.Asignatura">
+		<property name="nombre" value="Lengua Castellana"></property>
+		
+		<property name="curso" ref="curso2"></property>
+		
+	</bean>
+	<bean id="materia1" class="com.app.domain.model.types.Materia" >
+		<property name="profesor" ref="profesor1"></property>
+		<property name="criteriosDeEvaluacion">
+			<map>
+				<entry key="com.app.domain.model.types.itemsevaluables.Examen" value="80"></entry>
+				<entry key="com.app.domain.model.types.itemsevaluables.Trabajo" value="10"></entry>
+				<entry key="com.app.domain.model.types.itemsevaluables.Cuaderno" value="10"></entry>
+			</map>
+		</property>
+		<property name="asignatura" ref="asignatura5"></property>
+		<property name="curso" ref="instanciaCurso2"></property>
+		<property name="cursoAcademico" ref="cursoAcademico1"></property>
+		<property name="itemsEvaluables">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="evaluacion1" class="com.app.domain.model.types.Evaluacion">
+		<property name="inicio">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2015-3-21" />
+			</bean>
+		</property>
+		<property name="fin">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2015-6-30" />
+			</bean>
+		</property>
+		<property name="indicador" value="3"></property>
+		<property name="itemsEvaluable">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="evaluacion2" class="com.app.domain.model.types.Evaluacion">
+		<property name="inicio">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2015-1-7" />
+			</bean>
+		</property>
+		<property name="fin">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2015-3-22" />
+			</bean>
+		</property>
+		<property name="indicador" value="2"></property>
+		<property name="itemsEvaluable">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="evaluacion3" class="com.app.domain.model.types.Evaluacion">
+		<property name="fin">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2014-12-22" />
+			</bean>
+		</property>
+		<property name="inicio">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2014-9-22" />
+			</bean>
+		</property>
+		<property name="indicador" value="1"></property>
+		<property name="itemsEvaluable">
+			<list>
+			</list>
+		</property>
+	</bean>
+	
+
+	<bean id="notaPorEvaluacion4" class="com.app.domain.model.types.NotaPorEvaluacion">
+		<property name="alumno" ref="alumno2"></property>
+		<property name="notaFinal" value="2"></property>
+		<property name="materia" ref="materia1"></property>
+		<property name="evaluacion" ref="evaluacion2"></property>
+	</bean>
+	
+	<bean id="notaPorEvaluacion5" class="com.app.domain.model.types.NotaPorEvaluacion">
+		<property name="alumno" ref="alumno2"></property>
+		<property name="notaFinal" value="6"></property>
+		<property name="materia" ref="materia1"></property>
+		<property name="evaluacion" ref="evaluacion1"></property>
+	</bean>
+	
+	<bean id="notaPorEvaluacion6" class="com.app.domain.model.types.NotaPorEvaluacion">
+		<property name="alumno" ref="alumno2"></property>
+		<property name="notaFinal" value="7"></property>
+		<property name="materia" ref="materia1"></property>
+		<property name="evaluacion" ref="evaluacion3"></property>
+	</bean>
+	
+	<bean id="cita1" class="com.app.domain.model.types.Cita">
+		<property name="confirmadoProfesor" value="false"></property>
+		<property name="confirmadoTutor" value="false"></property>
+		<property name="leida" value="false"></property>
+		<property name="contenido" value="Cita entre personas"></property>
+		<property name="emisor" value="Profesor"></property>
+		<property name="fecha">
+			<bean factory-bean="dateFormat" factory-method="parse">
+				<constructor-arg value="2015-05-12" />
+			</bean>
+		</property>
+		<property name="titulo" value="Cita entre un profesor y un tutor"></property>
+		<property name="profesor" ref="profesor1"></property>
+		<property name="padreMadreOTutor" ref="tutor1"></property>
+	</bean>
+	
+	<bean id="dateFormat" class="java.text.SimpleDateFormat">
+		<constructor-arg value="yyyy-MM-dd" />
 	</bean>
 </beans>
 

@@ -80,6 +80,8 @@ public class PanelControlView extends Panel implements View {
 	
 	@Autowired
 	private AdministradorCreateWindow windowAdmin;
+	@Autowired
+	private TopGrossingMoviesChart topGrossingMoviesChart;
 
 	private Label titleLabel;
 	private NotificationsButton notificationsButton;
@@ -215,7 +217,6 @@ public class PanelControlView extends Panel implements View {
 
 	private Component buildTopGrossingMovies() {
 		if (presenter.getCurrentPerson() instanceof Profesor) {
-			TopGrossingMoviesChart topGrossingMoviesChart = new TopGrossingMoviesChart();
 			topGrossingMoviesChart.setSizeFull();
 			return createContentWrapper(topGrossingMoviesChart);
 		} else {
