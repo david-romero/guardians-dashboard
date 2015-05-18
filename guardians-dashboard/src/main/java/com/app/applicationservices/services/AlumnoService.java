@@ -158,7 +158,13 @@ public class AlumnoService {
 	 */
 	public Alumno findOne(int alumnoId) {
 		Assert.isTrue(alumnoId > 0);
-		return alumnoRepositorio.findOne(alumnoId);
+		Alumno a = alumnoRepositorio.findOne(alumnoId);
+		Assert.notNull(a.getCursos());
+		Assert.notEmpty(a.getCursos());
+		Assert.notNull(a.getPadresMadresOTutores());
+		Assert.notEmpty(a.getPadresMadresOTutores());
+		Assert.notNull(a.getItemsEvaluables());
+		return a;
 	}
 
 	/**

@@ -39,4 +39,12 @@ public interface EventoRepository extends JpaRepository<Evento, Integer> {
 	 * @return 
 	 */
 	Collection<Evento> findAllEventosProfesor(int id);
+	
+	@Query("select n from Evento n where n.profesor.id=?1 and n.materia.id=?2")
+	/**
+	 * @author David Romero Alcaide
+	 * @param id
+	 * @return 
+	 */
+	Collection<Evento> findAllEventosProfesorMateria(int idProfesor,int idMateria);
 }

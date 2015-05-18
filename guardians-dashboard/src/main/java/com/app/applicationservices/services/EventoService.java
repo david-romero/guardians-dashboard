@@ -11,7 +11,7 @@ package com.app.applicationservices.services;
  * imports
  */
 import java.util.Collection;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,10 @@ import org.springframework.util.Assert;
 
 import com.app.domain.model.types.Alumno;
 import com.app.domain.model.types.Evento;
+import com.app.domain.model.types.Materia;
 import com.app.domain.model.types.PadreMadreOTutor;
 import com.app.domain.model.types.Profesor;
 import com.app.domain.repositories.EventoRepository;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Service
@@ -90,6 +88,14 @@ public class EventoService {
 	public Collection<Evento> findAllProfesor(Profesor profesor) {
 		Assert.notNull(profesor);
 		return eventoRepository.findEventosProfesorPasados(profesor.getId());
+	}
+	
+	public Collection<Evento> findAllProfesorMateria(Optional<Materia> asignatura) {
+		Assert.notNull(asignatura);
+		Assert.isTrue(asignatura.isPresent());
+		Assert.notNull(asignatura.get().getProfesor());
+		Assert.isTrue(asignatura.get().getProfesor().isIdentidadConfirmada());
+		return eventoRepository.findAllEventosProfesorMateria(asignatura.get().getProfesor().getId(),asignatura.get().getId());
 	}
 
 	public Collection<Evento> findAllProfesorPasadoFuturo(Profesor profesor) {

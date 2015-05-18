@@ -110,9 +110,13 @@ public class InstanciaCurso extends DomainEntity{
 	public void setProfesor(Profesor profesor) {
 		this.profesor = profesor;
 	}
-	
-	
-	
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getCurso().toString();
+	}
 	
 }

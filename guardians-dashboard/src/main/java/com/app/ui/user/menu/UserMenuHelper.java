@@ -18,6 +18,9 @@ import com.app.ui.user.alumno.view.PerfilView;
 import com.app.ui.user.calendario.view.CalendarioView;
 import com.app.ui.user.calificar.alumno.view.CalificarAlumnoView;
 import com.app.ui.user.panelControl.view.PanelControlView;
+import com.app.ui.user.spreadsheet.ExcelView;
+import com.app.ui.user.spreadsheet.SpreadSheet2View;
+import com.app.ui.user.spreadsheet.SpreadSheetView;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
@@ -36,7 +39,10 @@ public enum UserMenuHelper {
 	CALENDARIO("Calendario", CalendarioView.class, FontAwesome.CALENDAR, true,Arrays.asList(new Authority(Authority.TUTOR),new Authority(Authority.PROFESOR))),
 	CALIFICARALUMNO("CalificarAlumno", CalificarAlumnoView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR))),
 	ALUMNO("Perfil", PerfilView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR))),
-	LISTAR("Listar", ListarView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR)));
+	LISTAR("Listar", ListarView.class, FontAwesome.EDIT, true,Arrays.asList(new Authority(Authority.PROFESOR))),
+	CALIFICAR("Calificar", ExcelView.class, FontAwesome.FILE_EXCEL_O, true,Arrays.asList(new Authority(Authority.PROFESOR))),
+	EVALUAR("Evaluar", SpreadSheetView.class, FontAwesome.FILE_EXCEL_O, true,Arrays.asList(new Authority(Authority.PROFESOR))),
+	ANOTAR("Anotar", SpreadSheet2View.class, FontAwesome.FILE_EXCEL_O, true,Arrays.asList(new Authority(Authority.PROFESOR)));
 	
 
     private final String viewName;

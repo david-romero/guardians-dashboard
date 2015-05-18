@@ -10,8 +10,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.app.domain.model.types.Alumno;
+import com.app.domain.model.types.Materia;
+import com.app.domain.model.types.Profesor;
 import com.app.ui.user.alumno.presenter.AlumnoPresenter;
 import com.google.common.collect.Lists;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -35,6 +38,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 
@@ -61,6 +65,8 @@ public class ListarView extends TabSheet implements View ,com.vaadin.server.Page
 	
 	protected List<Alumno> alumnos = Lists.newArrayList();
 	
+	protected Profesor profesor;
+	
 	@Autowired
 	protected AlumnoPresenter presenter;
 	
@@ -68,10 +74,9 @@ public class ListarView extends TabSheet implements View ,com.vaadin.server.Page
 	public void enter(ViewChangeEvent event) {
 		Responsive.makeResponsive(this);
 		Page.getCurrent().addBrowserWindowResizeListener(this);
-		alumnos = Lists.newArrayList(presenter.getAlumnosProfesor());
+		alumnos = Lists.newArrayList();
 		
-		//TODO CURSO
-		//pintarDatos()
+		profesor = presenter.getProfesor();
 		
 	}
 
@@ -80,7 +85,9 @@ public class ListarView extends TabSheet implements View ,com.vaadin.server.Page
 			removeTab(tab);
 		}
 		tabs = Lists.newArrayList();
-		for ( int curso = 0; curso < 5; curso++ ){
+		List<Materia> materias = Lists.newArrayList(presenter.getMateriasProfesor());
+		for ( int curso = 0; curso < materias.size(); curso++ ){
+			Materia m = materias.get(curso);
 			VerticalLayout tab = new VerticalLayout();
 			Panel p = new Panel();
 			tab.addComponent(p);
@@ -93,7 +100,7 @@ public class ListarView extends TabSheet implements View ,com.vaadin.server.Page
 			vl.setSpacing(true);
 			vl.setMargin(true);
 			vl.setWidth(100, Unit.PERCENTAGE );
-
+			alumnos = Lists.newArrayList(m.getCurso().getAlumnos());
 			if ( browserAncho > 630  ){
 				for ( int i = 0; i < alumnos.size() ; i += 3 ){
 					Alumno primer = alumnos.get(i);
@@ -137,8 +144,8 @@ public class ListarView extends TabSheet implements View ,com.vaadin.server.Page
 			tray.add(buildTray(curso));
 			vl.addComponent(tray.get(curso));
 			setTrayVisible(false,curso);
-			//TODO CURSO
-			Tab pestania = addTab(tab,  (curso + 1) + "ª ESO");
+			
+			Tab pestania = addTab(tab, m.getAsignatura().getNombre() + " de " + m.getCurso().getCurso().toString() );
 			pestania.setClosable(true);
 			tabs.add(pestania);
 			addStyleName("right-aligned-tabs");
@@ -278,11 +285,16 @@ public class ListarView extends TabSheet implements View ,com.vaadin.server.Page
 		
 		card.setComponentAlignment(cssBotonera, Alignment.MIDDLE_CENTER);
 		
-		Label lbl = new Label(alum.getNombre());
+		Label lbl = new Label(alum.getNombre() + " " + alum.getApellidos());
 		lbl.addStyleName("colored");
 		css.addComponent(lbl);
 		css.setHeight("0px");
 		css.setWidth("100%");
+		
+		css.addLayoutClickListener(e->{
+			UI.getCurrent().getNavigator()
+			.navigateTo("Perfil/" + alum.getId());
+		});
 		
 		
 		cssCard.addComponent(card);

@@ -8,12 +8,15 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.app.domain.model.types.Alumno;
+import com.app.domain.model.types.InstanciaCurso;
+import com.app.domain.model.types.PadreMadreOTutor;
 import com.app.domain.model.types.itemsevaluables.FaltaDeAsistencia;
 import com.app.ui.user.alumno.presenter.AlumnoPresenter;
 import com.google.common.collect.Lists;
@@ -59,6 +62,8 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 @SpringView(name = "Perfil")
 public class PerfilView extends CssLayout implements View,com.vaadin.server.Page.BrowserWindowResizeListener{
 
+	private final static Logger log = Logger.getLogger(PerfilView.class);
+	
 	/**
 	 * 
 	 */
@@ -78,13 +83,33 @@ public class PerfilView extends CssLayout implements View,com.vaadin.server.Page
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		String idAlumno = event.getParameters();
+		Integer id  = 0;
+		if ( idAlumno != null && !idAlumno.isEmpty() ){
+			try{
+			 id = Integer.parseInt(idAlumno);
+			}catch (NumberFormatException ignore){id = 0;}
+		}
 		Responsive.makeResponsive(this);
-		Page.getCurrent().addBrowserWindowResizeListener(this);
-		
-		Alumno alum = presenter.getAlumnosProfesor().stream().collect(Collectors.toList()).get(0);
 		setSizeFull();
+		Page.getCurrent().addBrowserWindowResizeListener(this);
+		Alumno alum = null;
+		if ( id > 0 ){
+			alum = presenter.getAlumno(id);
+			pintarDatos(alum);
+		}else{
+			Label error = new Label("Datos inválidos");
+			error.addStyleName("error");
+			addComponent(error);
+		}
 		
-		
+	}
+
+	/**
+	 * @author David
+	 * @param alum
+	 */
+	private void pintarDatos(Alumno alum) {
 		addStyleName("reports");
 		
 		Resource r;
@@ -108,9 +133,23 @@ public class PerfilView extends CssLayout implements View,com.vaadin.server.Page
 		}
 		Image img = new Image(null,r);
 		
-		Label lblNombre = new Label(alum.getNombre());
-		Label lblCurso = new Label( ((3)+1) + "º ESO" );
-		Label lblTutores = new Label("Es tutorado por " + " @username1 " + " y " + " @username2 ");
+		Label lblNombre = new Label(alum.getNombre() + " " + alum.getApellidos());
+		Optional<InstanciaCurso> c = presenter.getCursoAlumno(alum);
+		String curso = "";
+		if ( c.isPresent() ){
+			curso = c.get().getCurso().toString();
+		}
+		Label lblCurso = new Label(curso);
+		List<PadreMadreOTutor> tutores = Lists.newArrayList(alum.getPadresMadresOTutores());
+		Label lblTutores = new Label();
+		if ( tutores.size() > 0 ){
+			String captionLblTutores = "Es tutorado por";
+			for ( PadreMadreOTutor tutor : tutores ){
+				captionLblTutores += " @" + tutor.getUserAccount().getUsername() + " y";
+			}
+			captionLblTutores = captionLblTutores.substring(0, captionLblTutores.length() - 2);
+			lblTutores.setCaption(captionLblTutores);
+		}
 		Button b = new Button(FontAwesome.SEND);
 		b.addStyleName("float-button");
 		VerticalLayout vlDatos = new VerticalLayout(lblNombre,lblCurso,lblTutores);
@@ -183,8 +222,11 @@ public class PerfilView extends CssLayout implements View,com.vaadin.server.Page
 					}else if ( browserAncho <= 1280 && browserAncho > 815 && Page.getCurrent().getBrowserWindowHeight() <= 800 ){
 						style += "margin-top: 5.5%;margin-bottom: 5.5%;margin-left: 5.5%;margin-right: 0%;";
 						style += "width: 200px;max-width: 200px;height: 200px;max-height: 200px;";
-					}else if ( browserAncho  > 1280 && Page.getCurrent().getBrowserWindowHeight() <= 900 ){
+					}else if ( browserAncho  > 1280 && browserAncho  <= 1340 && Page.getCurrent().getBrowserWindowHeight() <= 900 ){
 						style += "margin-top: 4.6%;margin-bottom: 4.6%;margin-left: 10%;margin-right: 0%;";
+						style += "width: 200px;max-width: 200px;height: 200px;max-height: 200px;";
+					}else if ( browserAncho  > 1340 && Page.getCurrent().getBrowserWindowHeight() <= 900 ){
+						style += "margin-top: 2.5%;margin-bottom: 2.5%;margin-left: 10%;margin-right: 0%;";
 						style += "width: 200px;max-width: 200px;height: 200px;max-height: 200px;";
 					}else{
 						style += "margin-left: 5%;margin-top: 7%;margin-bottom: 7%;width: 200px;max-width: 200px;height: 200px;max-height: 200px;";
@@ -206,6 +248,9 @@ public class PerfilView extends CssLayout implements View,com.vaadin.server.Page
 						style += "width: 63%;margin-top: 8.3%;margin-bottom: 8.3%;margin-left: 6.5%;";
 					}else if ( browserAncho >= 1024  && Page.getCurrent().getBrowserWindowHeight() >= 768 ) {
 						style += "width: 63%;margin-top: 14%;margin-bottom: 14%;margin-left: 6.5%;";
+					}else if ( browserAncho  > 1340 && Page.getCurrent().getBrowserWindowHeight() < 768 ){
+						style += "margin-top: 8%;  margin-bottom: 8%;  margin-left: 5%;";
+						style += "width: 65%;max-width: 65%;";
 					}else if ( browserAncho > 550 && browserAncho <= 760 && Page.getCurrent().getBrowserWindowHeight() <= 400 ) {
 						style += "width: 45%;min-width: 45%;max-width: 45%;margin-top: 1%;margin-bottom: 1%;margin-left: 1%;";
 					}else if ( browserAncho > 440 && browserAncho < 550 && Page.getCurrent().getBrowserWindowHeight() <= 400 ) {
@@ -239,7 +284,9 @@ public class PerfilView extends CssLayout implements View,com.vaadin.server.Page
 				}
 				if ( c instanceof CssLayout ){
 					style += "display: inline-flex;";
-					if (  browserAncho > 900 &&  Page.getCurrent().getBrowserWindowHeight() <= 600 ){
+					if ( browserAncho  > 1340 && Page.getCurrent().getBrowserWindowHeight() < 768 ){
+						style += "margin-left: 42%;  margin-right: 42%;	  margin-top: -7%;min-width: 210px;";
+					}else if (  browserAncho > 900 &&  Page.getCurrent().getBrowserWindowHeight() <= 600 ){
 						style += "margin-left: 40%;margin-right: 40%;margin-top: -5%;min-width: 210px;";
 					}else if ( browserAncho <= 1280 && browserAncho > 1024 && Page.getCurrent().getBrowserWindowHeight() <= 800 ){
 						style += "margin-left: 38%;margin-right: 38%;margin-top: -7%;";
@@ -349,12 +396,8 @@ public class PerfilView extends CssLayout implements View,com.vaadin.server.Page
 		HeaderRow filterRow = grid.appendHeaderRow();
 		
 		
-		List<FaltaDeAsistencia> collection = Lists.newArrayList();
-		collection.add(new FaltaDeAsistencia());
-		collection.add(new FaltaDeAsistencia());
-		collection.add(new FaltaDeAsistencia());
-		collection.add(new FaltaDeAsistencia());
-		collection.add(new FaltaDeAsistencia());
+		List<FaltaDeAsistencia> collection = presenter.getFaltasAsistenciaAlumno(alum);
+		
   		
 		BeanItemContainer<FaltaDeAsistencia> container = new BeanItemContainer<FaltaDeAsistencia>(FaltaDeAsistencia.class, 
 			collection);
